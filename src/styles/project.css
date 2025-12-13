@@ -2,6 +2,10 @@
   margin-top: 20vh;
 }
 
+:root {
+  --slide-width: min(80vh, 80vw);
+}
+
 .project-images {
   grid-column: 1/-1;
   width: 100%;
@@ -11,26 +15,27 @@
 
 .project-images-carousel {
   display: flex;
+  gap: calc((var(--gutter)));
   overflow-x: auto;
   overflow-y: hidden;
-  gap: calc((var(--gutter)));
   -webkit-overflow-scrolling: touch;
   width: 100%;
   align-items: center;
   scrollbar-width: none;
   margin-top: 10vh;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scroll-padding-inline: calc((100vw - var(--slide-width)) / 2);
 }
 
 .project-images-carousel::-webkit-scrollbar {
   display: none;
 }
 
-.project-images-carousel > :first-child {
-  margin-left: 35%;
-}
-
-.project-images-carousel > :last-child {
-  margin-right: 35%;
+.project-images-carousel::before,
+.project-images-carousel::after {
+  content: '';
+  flex: 0 0 calc((100vw - var(--slide-width)) / 2);
 }
 
 .project-images-bleed {
@@ -46,11 +51,12 @@
 .project-figure {
   flex: 0 0 auto;
   height: 70vh;
-  width: min(80vh, 80vw);
+  width: var(--slide-width);
   display: flex;
   align-items: center;
   justify-content: center;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
   flex-direction: column;
   cursor: pointer;
 }

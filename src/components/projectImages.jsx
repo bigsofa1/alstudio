@@ -5,10 +5,12 @@ import { useRef, useCallback, useEffect, useState } from "react"
 
 export default function ProjectImages({ images = [], activeProject, language = "en" }) {
 const [focusIndex, setFocusIndex] = useState(null)
-const scrollThreshold = 75;
+const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
 const touchStartRef = useRef(null);
-const touchThreshold = 40;
+const touchThreshold = 30;
+const scrollStepSize = 100; // adjust for multi-step wheel sensitivity
+const touchStepSize = 80; // adjust for multi-step swipe sensitivity
 const closeButtonRef = useRef(null);
 
 const openImage = useCallback(
@@ -75,10 +77,11 @@ useEffect(() => {
     if (Math.abs(scrollAccumulator.current) < scrollThreshold) return;
 
     event.preventDefault();
+    const steps = Math.max(1, Math.floor(Math.abs(scrollAccumulator.current) / scrollStepSize));
     if (scrollAccumulator.current > 0) {
-      showNext();
+      for (let i = 0; i < steps; i += 1) showNext();
     } else {
-      showPrev();
+      for (let i = 0; i < steps; i += 1) showPrev();
     }
     scrollAccumulator.current = 0;
   };
@@ -107,10 +110,11 @@ useEffect(() => {
     if (Math.abs(primaryDelta) < touchThreshold) return;
 
     event.preventDefault();
+    const steps = Math.max(1, Math.floor(Math.abs(primaryDelta) / touchStepSize));
     if (primaryDelta > 0) {
-      showNext();
+      for (let i = 0; i < steps; i += 1) showNext();
     } else {
-      showPrev();
+      for (let i = 0; i < steps; i += 1) showPrev();
     }
 
     touchStartRef.current = null;
