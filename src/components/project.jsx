@@ -11,11 +11,19 @@ const images = [
 
 
 // taking globs, then normalizing image paths
-const normalizedImages = images.map((img) => ({
+const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+
+const normalizedImages = images.map((img) => {
+  const raw = img.image || ''
+  const path = raw.startsWith('http')
+    ? raw
+    : `${base}${raw.startsWith('/') ? raw : `/${raw}`}`
+  return {
     ...img,
-    image: img.image?.startsWith('/') ? img.image : `/${img.image}`,
+    image: path,
     collections: Array.isArray(img.collections) ? img.collections : [],
-}));    
+  }
+})
 
 export default function Project({activeProject}) {
     // Filter images by collection instead of tags
