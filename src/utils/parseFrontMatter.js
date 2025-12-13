@@ -1,4 +1,4 @@
-// Simple YAML-ish frontmatter parser for Decap markdown entries
+// Simple YAML-ish frontmatter parser for decap markdown entries
 export function parseFrontmatter(raw) {
   if (typeof raw !== 'string') return {}
   if (!raw.startsWith('---')) return {}

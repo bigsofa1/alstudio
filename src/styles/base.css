@@ -1,0 +1,73 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-family: 'Be Vietnam Pro', sans-serif;
+  --margin: 1rem;
+  --gutter: 20rem;
+  --font-size: 16px;
+  --base-color-light: #fafafa;
+  --base-color-dark: #050505;
+  --text-color-hover: color-mix(in srgb, var(--base-color-dark) 50%, white 100%);
+  --grid: repeat(12, 1fr);
+}
+
+body {
+  margin: 0 var(--margin);
+  background-color: var(--base-color-light);
+  color: var(--base-color-dark);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  white-space: pre-line;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: inherit;
+}
+
+main {
+  display: grid;
+  grid-template-columns: var(--grid);
+  gap: var(--margin);
+  margin: var(--margin);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+button:hover {
+  cursor: pointer;
+  color: color-mix(in srgb, var(--base-color-dark) 80%, #000000 20%);
+  transition: all 0.1s ease-out;
+  transform: scale(1.02);
+}
+
+.muted {
+  color: var(--text-color-hover);
+  transform: scale(0.98);
+}

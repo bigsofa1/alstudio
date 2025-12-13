@@ -1,0 +1,108 @@
+.project {
+  margin-top: 20vh;
+}
+
+.project-images {
+  grid-column: 1/-1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.project-images-carousel {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: calc((var(--gutter)));
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  align-items: center;
+  scrollbar-width: none;
+  margin-top: 10vh;
+}
+
+.project-images-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.project-images-carousel > :first-child {
+  margin-left: 35%;
+}
+
+.project-images-carousel > :last-child {
+  margin-right: 35%;
+}
+
+.project-images-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.project-images-bleed .project-images-carousel {
+  padding-inline: 0;
+}
+
+.project-figure {
+  flex: 0 0 clamp(40vh, 50vh, 60vh);
+  scroll-snap-align: start;
+  flex-direction: column;
+  cursor:pointer;
+}
+
+.project-image {
+  flex: 0 0 auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-focus {
+  background-color: var(--base-color-light);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  cursor: pointer;
+  padding: var(--margin);
+  box-sizing: border-box;
+}
+
+.image-focus figure {
+  position: relative;
+}
+
+.image-focus img {
+  max-width: 95%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.image-focus figcaption {
+  justify-self: left;
+  align-items: left;
+}
+
+.image-focus-btn-exit {
+  position: absolute;
+  top: calc(var(--margin) * 2);
+  right: calc(var(--margin) * 2);
+}
+
+.image-focus-btn-prev {
+  position: absolute;
+  top: 20%;
+  right: calc(var(--margin) * 2);
+}
+
+.image-focus-btn-next {
+  position: absolute;
+  top: 25%;
+  right: calc(var(--margin) * 2);
+}

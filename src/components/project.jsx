@@ -1,8 +1,9 @@
 import { parseFrontmatter } from '../utils/parseFrontMatter.js'
+import ProjectImages from './projectImages.jsx'
 
 // images glob (json + md frontmatter)
 const imageJsonModules = import.meta.glob('/content/images/*.json', { eager: true });
-const imageMdModules = import.meta.glob('/content/images/*.md', { eager: true, as: 'raw' });
+const imageMdModules = import.meta.glob('/content/images/*.md', { eager: true, query: '?raw', import: 'default' });
 
 const images = [
   ...Object.values(imageJsonModules).map((mod) => mod.default ?? mod),
@@ -25,24 +26,6 @@ const normalizedImages = images.map((img) => {
   }
 })
 
-export default function Project({activeProject}) {
-    // Filter images by collection instead of tags
-    const visible = normalizedImages.filter((img) =>
-        img.collections?.includes(activeProject)
-    );
-
-    return (
-        <div className="project-images">
-            <div className="project-images-bleed">
-                <div className="project-images-carousel">
-                    {visible.map((img) => (
-                        <figure key={img.image}
-                        className="project-figure hoverable">
-                            <img src={img.image} alt={img.alt} className="project-image"/>
-                        </figure>
-                    ))}
-                </div>
-            </div>
-        </div> 
-    )
+export default function Project({ activeProject }) {
+  return <ProjectImages images={normalizedImages} activeProject={activeProject} />
 }

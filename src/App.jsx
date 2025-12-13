@@ -7,7 +7,11 @@ function App() {
   // load project metadata (json + md)
   const projects = useMemo(() => {
     const jsonModules = import.meta.glob('/content/projects/*.json', { eager: true })
-    const mdModules = import.meta.glob('/content/projects/*.md', { eager: true, as: 'raw' })
+    const mdModules = import.meta.glob('/content/projects/*.md', {
+      eager: true,
+      query: '?raw',
+      import: 'default',
+    })
 
     const fromJson = Object.values(jsonModules).map((mod) => mod.default ?? mod)
     const fromMd = Object.values(mdModules).map((raw) => parseFrontmatter(raw))
@@ -24,7 +28,11 @@ function App() {
   // load images to determine which projects have content
   const images = useMemo(() => {
     const imageJsonModules = import.meta.glob('/content/images/*.json', { eager: true })
-    const imageMdModules = import.meta.glob('/content/images/*.md', { eager: true, as: 'raw' })
+    const imageMdModules = import.meta.glob('/content/images/*.md', {
+      eager: true,
+      query: '?raw',
+      import: 'default',
+    })
     const fromJson = Object.values(imageJsonModules).map((mod) => mod.default ?? mod)
     const fromMd = Object.values(imageMdModules).map((raw) => parseFrontmatter(raw))
     return [...fromJson, ...fromMd]
@@ -45,21 +53,23 @@ function App() {
   )
 
   //controls project active state
-  const [activeProject, setActiveProject] = useState(() => {
+  const [activeProject, setActiveProject] = useState('')
+  const effectiveActiveProject = useMemo(() => {
+    if (!visibleProjects.length) return ''
+    if (visibleProjects.some((p) => p.slug === activeProject)) return activeProject
     const hasStudio = visibleProjects.some((p) => p.slug === 'studio')
-    if (hasStudio) return 'studio'
-    return visibleProjects[0]?.slug || ''
-  })
+    return hasStudio ? 'studio' : visibleProjects[0].slug
+  }, [visibleProjects, activeProject])
 
   return (
     <main className="App">
       <Nav
-        activeProject={activeProject}
+        activeProject={effectiveActiveProject}
         setActiveProject={setActiveProject}
         projects={visibleProjects}
       />
       <Project
-        activeProject={activeProject}
+        activeProject={effectiveActiveProject}
         setActiveProject={setActiveProject}
         projects={visibleProjects}
       />
