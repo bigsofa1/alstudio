@@ -15,7 +15,7 @@
 
 .project-images-carousel {
   display: flex;
-  gap: calc((var(--gutter)));
+  gap: var(--gutter);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -25,7 +25,7 @@
   margin-top: 10vh;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  scroll-padding-inline: calc((100vw - var(--slide-width)) / 2);
+  padding-inline: calc((100vw - var(--slide-width)) / 2);
 }
 
 .project-images-carousel::-webkit-scrollbar {
@@ -35,7 +35,7 @@
 .project-images-carousel::before,
 .project-images-carousel::after {
   content: '';
-  flex: 0 0 calc((100vw - var(--slide-width)) / 2);
+  flex: 0 0 0;
 }
 
 .project-images-bleed {
