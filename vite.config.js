@@ -4,6 +4,7 @@ import decapCms from 'vite-plugin-decap-cms'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/alstudio/',
   plugins: [
     react(),
     decapCms({
