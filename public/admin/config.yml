@@ -3,8 +3,11 @@ local_backend:
   allowed_hosts:
     - localhost
 backend:
+  name: github
+  repo: bigsofa1/alstudio
   branch: main
-  name: git-gateway
+  base_url: https://<your-proxy>.vercel.app
+  auth_endpoint: /auth
 media_folder: public/img/uploads
 public_folder: /img/uploads
 collections:
