@@ -8,6 +8,7 @@ backend:
   branch: main
   base_url: https://decap-oauth-proxy.vercel.app/
   auth_endpoint: /auth
+site_url: https://bigsofa1.github.io/alstudio
 media_folder: public/img/uploads
 public_folder: /img/uploads
 collections:
