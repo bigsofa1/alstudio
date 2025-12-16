@@ -4,7 +4,6 @@ import decapCms from 'vite-plugin-decap-cms'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Netlify serves at the site root, so keep base at '/' (was '/alstudio/' for GitHub Pages)
   base: '/',
   plugins: [
     react(),
