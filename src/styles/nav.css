@@ -1,7 +1,13 @@
 .nav {
-  grid-column: 1/-1;
+  position: fixed;
+  top: var(--margin) *2;
+  left: 0;
+  width: 100%;
   display: grid;
   grid-template-columns: var(--grid);
+  z-index: 3;
+  background: transparent;
+  pointer-events: none;
 }
 
 .nav__link {
@@ -19,6 +25,7 @@
 
 .nav__group {
   position: relative;
+  pointer-events: auto;
 }
 
 .nav__toggle {
@@ -36,7 +43,6 @@
   padding: 0;
   list-style: none;
   background: var(--base-color-light);
-  z-index: 10;
   min-width: 220px;
 }
 
@@ -49,16 +55,19 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  pointer-events: auto;
 }
 
 .nav-items {
   grid-column: 8/span 2;
   display: flex;
   gap: var(--margin);
+  pointer-events: auto;
 }
 
-.nav-lens-items {
+.nav-tags-items {
   grid-column: 10/span 2;
+  pointer-events: auto;
 }
 
 .nav__dropdown .nav__link {
@@ -67,4 +76,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.nav__context {
+  grid-column: 10/span 2;
+  align-self: start;
+  padding-top: var(--margin);
+  pointer-events: auto;
 }

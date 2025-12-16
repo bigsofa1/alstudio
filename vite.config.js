@@ -4,7 +4,8 @@ import decapCms from 'vite-plugin-decap-cms'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/alstudio/',
+  // Netlify serves at the site root, so keep base at '/' (was '/alstudio/' for GitHub Pages)
+  base: '/',
   plugins: [
     react(),
     decapCms({
@@ -15,8 +16,7 @@ export default defineConfig({
           allowed_hosts: ['localhost'],
         },
         backend: {
-          name: 'github',
-          repo: 'bigsofa1/alstudio',
+          name: 'git-gateway',
           branch: 'main',
         },
         mediaFolder: 'public/img/uploads',
@@ -31,14 +31,23 @@ export default defineConfig({
             fields: [
               { label: 'Image', name: 'image', widget: 'image' },
               { label: 'Alt Text', name: 'alt', widget: 'string' },
-              { label: 'Tags', name: 'tags', widget: 'list' },
+              {
+                label: 'Tags',
+                name: 'tags',
+                widget: 'relation',
+                collection: 'tags',
+                search_fields: ['name', 'slug'],
+                value_field: 'slug',
+                display_fields: ['name'],
+                multiple: true,
+              },
               { label: 'Collections', name: 'collections', widget: 'list' },
               { label: 'Order', name: 'order', widget: 'number', default: 0 },
             ],
           },
           {
             name: 'projects',
-            label: 'Projects / Tags',
+            label: 'Projects',
             folder: 'content/projects',
             create: true,
             slug: '{{slug}}',
@@ -46,6 +55,17 @@ export default defineConfig({
               { label: 'Name', name: 'name', widget: 'string' },
               { label: 'Slug', name: 'slug', widget: 'string' },
               { label: 'Description', name: 'description', widget: 'text', required: false },
+            ],
+          },
+          {
+            name: 'tags',
+            label: 'Tags',
+            folder: 'content/tags',
+            create: true,
+            slug: '{{slug}}',
+            fields: [
+              { label: 'Name', name: 'name', widget: 'string' },
+              { label: 'Slug', name: 'slug', widget: 'string' },
             ],
           },
         ],

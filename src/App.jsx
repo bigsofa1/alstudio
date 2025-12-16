@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
 import Nav from './components/nav.jsx'
 import Project from './components/project.jsx'
+import About from './components/about.jsx'
 import { parseFrontmatter } from './utils/parseFrontMatter.js'
 
 function App() {
+  const [view, setView] = useState('projects')
+  const [activeTag, setActiveTag] = useState('')
   // load project metadata (json + md)
   const projects = useMemo(() => {
     const jsonModules = import.meta.glob('/content/projects/*.json', { eager: true })
@@ -38,6 +41,30 @@ function App() {
     return [...fromJson, ...fromMd]
   }, [])
 
+  // load tag definitions (json + md)
+  const tagsCollection = useMemo(() => {
+    const tagJson = import.meta.glob('/content/tags/*.json', { eager: true })
+    const tagMd = import.meta.glob('/content/tags/*.md', {
+      eager: true,
+      query: '?raw',
+      import: 'default',
+    })
+    const fromJson = Object.values(tagJson).map((mod) => mod.default ?? mod)
+    const fromMd = Object.values(tagMd).map((raw) => parseFrontmatter(raw))
+    return [...fromJson, ...fromMd]
+      .filter((t) => t && (t.slug || t.name))
+      .map((t) => ({
+        slug: t.slug || t.name,
+        name: t.name || t.slug || 'Untitled Tag',
+      }))
+  }, [])
+
+  const tagLabelMap = useMemo(() => {
+    const map = new Map()
+    tagsCollection.forEach((t) => map.set(t.slug, t.name))
+    return map
+  }, [tagsCollection])
+
   const nonEmptySlugs = useMemo(() => {
     const slugs = new Set()
     images.forEach((img) => {
@@ -61,18 +88,44 @@ function App() {
     return hasStudio ? 'studio' : visibleProjects[0].slug
   }, [visibleProjects, activeProject])
 
+  const tagsForActiveProject = useMemo(() => {
+    if (!effectiveActiveProject) return []
+    const available = new Set()
+    images.forEach((img) => {
+      if (Array.isArray(img.collections) && img.collections.includes(effectiveActiveProject)) {
+        (img.tags || []).forEach((t) => t && available.add(t))
+      }
+    })
+    return tagsCollection.filter((tag) => available.has(tag.slug))
+  }, [images, effectiveActiveProject, tagsCollection])
+
+  if (activeTag && !tagsForActiveProject.some((t) => t.slug === activeTag)) {
+    setActiveTag('')
+  }
+
   return (
     <main className="App">
       <Nav
         activeProject={effectiveActiveProject}
         setActiveProject={setActiveProject}
         projects={visibleProjects}
+        view={view}
+        tags={tagsForActiveProject}
+        activeTag={activeTag}
+        setActiveTag={setActiveTag}
+        onSelectAbout={() => setView('about')}
+        onSelectProjects={() => setView('projects')}
       />
-      <Project
-        activeProject={effectiveActiveProject}
-        setActiveProject={setActiveProject}
-        projects={visibleProjects}
-      />
+      {view === 'about' ? (
+        <About />
+      ) : (
+        <Project
+          activeProject={effectiveActiveProject}
+          activeTag={activeTag}
+          setActiveProject={setActiveProject}
+          projects={visibleProjects}
+        />
+      )}
     </main>
   )
 }

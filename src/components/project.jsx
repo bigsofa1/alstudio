@@ -26,6 +26,6 @@ const normalizedImages = images.map((img) => {
   }
 })
 
-export default function Project({ activeProject }) {
-  return <ProjectImages images={normalizedImages} activeProject={activeProject} />
+export default function Project({ activeProject, activeTag }) {
+  return <ProjectImages images={normalizedImages} activeProject={activeProject} activeTag={activeTag} />
 }

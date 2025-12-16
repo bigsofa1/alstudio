@@ -3,9 +3,8 @@ local_backend:
   allowed_hosts:
     - localhost
 backend:
-  repo: bigsofa1/alstudio
   branch: main
-  name: github
+  name: git-gateway
 media_folder: public/img/uploads
 public_folder: /img/uploads
 collections:
@@ -23,7 +22,15 @@ collections:
         widget: string
       - label: Tags
         name: tags
-        widget: list
+        widget: relation
+        collection: tags
+        search_fields:
+          - name
+          - slug
+        value_field: slug
+        display_fields:
+          - name
+        multiple: true
       - label: Collections
         name: collections
         widget: list
@@ -32,7 +39,7 @@ collections:
         widget: number
         default: 0
   - name: projects
-    label: Projects / Tags
+    label: Projects
     folder: content/projects
     create: true
     slug: "{{slug}}"
@@ -47,3 +54,15 @@ collections:
         name: description
         widget: text
         required: false
+  - name: tags
+    label: Tags
+    folder: content/tags
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - label: Name
+        name: name
+        widget: string
+      - label: Slug
+        name: slug
+        widget: string

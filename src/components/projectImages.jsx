@@ -3,7 +3,7 @@
 
 import { useRef, useCallback, useEffect, useState } from "react"
 
-export default function ProjectImages({ images = [], activeProject, language = "en" }) {
+export default function ProjectImages({ images = [], activeProject, activeTag = '', language = "en" }) {
 const [focusIndex, setFocusIndex] = useState(null)
 const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
@@ -25,8 +25,12 @@ const closeImage = useCallback(() => {
 }, []
 );
 
-// Filter images by collection instead of tags
-const visible = images.filter((img) => img.collections?.includes(activeProject));
+// Filter images by collection and tag
+const visible = images.filter((img) => {
+  const inCollection = img.collections?.includes(activeProject);
+  const matchesTag = activeTag ? img.tags?.includes(activeTag) : true;
+  return inCollection && matchesTag;
+});
 const focusImage = focusIndex !== null ? visible[focusIndex] : null;
 
 const showNext = useCallback(() => {

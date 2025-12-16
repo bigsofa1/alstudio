@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-
-export default function Nav({projects = [],  activeProject, setActiveProject}) {
+import About from './about.jsx'
+export default function Nav({
+  projects = [],
+  activeProject,
+  setActiveProject,
+  tags = [],
+  activeTag,
+  setActiveTag,
+  onSelectAbout,
+  onSelectProjects,
+  view,
+}) {
   const [isHeaderOpen, setIsHeaderOpen] = useState(false)
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
-  const [isLensOpen, setIsLensOpen] = useState(false)
+  const [isTagsOpen, setIsTagsOpen] = useState(false)
   const navRef = useRef(null)
 
   useEffect(() => {
@@ -12,7 +22,7 @@ export default function Nav({projects = [],  activeProject, setActiveProject}) {
       if (!navRef.current.contains(event.target)) {
         setIsHeaderOpen(false)
         setIsProjectsOpen(false)
-        setIsLensOpen(false)
+        setIsTagsOpen(false)
       }
     }
 
@@ -33,54 +43,94 @@ export default function Nav({projects = [],  activeProject, setActiveProject}) {
           <h1>Alexia Lachance</h1>
         </button>
         <ul id="nav-header-dropdown" className="nav__dropdown">
-          <li><button className="nav__link muted">About</button></li>
-          <li><button className="nav__link muted">Contact</button></li>
+          <li>
+            <button
+              className={`nav__link ${view === 'projects' ? '' : 'muted'}`}
+              onClick={onSelectProjects}
+            >
+              Projects
+            </button>
+          </li>
+          <li>
+            <button
+              className={`nav__link ${view === 'about' ? '' : 'muted'}`}
+              onClick={onSelectAbout}
+            >
+              About
+            </button>
+          </li>
         </ul>
       </div>
 
-      <ul className="nav__list nav-items">
-        <li className={`nav__group nav-items__parent ${isProjectsOpen ? 'is-open' : ''}`}>
-          <button
-            className="nav__toggle"
-            aria-expanded={isProjectsOpen}
-            aria-controls="nav-items-dropdown"
-            onClick={() => setIsProjectsOpen((open) => !open)}
-          >
-            {projects.find((p) => p.slug === activeProject)?.name || 'Projects'}
-          </button>
-          <ul id="nav-items-dropdown" className="nav__dropdown">
-            {projects
-              .filter((project) => project.slug !== activeProject)
-              .map((project) => (
-                <li key={project.slug}>
-                  <button
-                    onClick={() => setActiveProject(project.slug)}
-                    className="nav__link muted"
-                  >
-                    {project.name}
-                  </button>
-                </li>
-              ))}
+      {view === 'projects' && (
+        <>
+          <ul className="nav__list nav-items">
+            <li className={`nav__group nav-items__parent ${isProjectsOpen ? 'is-open' : ''}`}>
+              <button
+                className="nav__toggle"
+                aria-expanded={isProjectsOpen}
+                aria-controls="nav-items-dropdown"
+                onClick={() => setIsProjectsOpen((open) => !open)}
+              >
+                {projects.find((p) => p.slug === activeProject)?.name || 'Projects'}
+              </button>
+              <ul id="nav-items-dropdown" className="nav__dropdown">
+                {projects
+                  .filter((project) => project.slug !== activeProject)
+                  .map((project) => (
+                    <li key={project.slug}>
+                      <button
+                        onClick={() => setActiveProject(project.slug)}
+                        className="nav__link muted"
+                      >
+                        {project.name}
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            </li>
           </ul>
-        </li>
-      </ul>
 
-      <ul className="nav__list nav-lens-items">
-        <li className={`nav__group nav-lens__parent ${isLensOpen ? 'is-open' : ''}`}>
-          <button
-            className="nav__toggle"
-            aria-expanded={isLensOpen}
-            aria-controls="nav-lens-dropdown"
-            onClick={() => setIsLensOpen((open) => !open)}
-          >
-            35mm
-          </button>
-          <ul id="nav-lens-dropdown" className="nav__dropdown">
-            <li><button className="nav__link muted">28mm</button></li>
-            <li><button className="nav__link muted">105mm</button></li>
+          <ul className="nav__list nav-tags-items">
+            <li className={`nav__group nav-tags__parent ${isTagsOpen ? 'is-open' : ''}`}>
+              <button
+                className="nav__toggle"
+                aria-expanded={isTagsOpen}
+                aria-controls="nav-tags-dropdown"
+                onClick={() => setIsTagsOpen((open) => !open)}
+              >
+                {tags.find((t) => t.slug === activeTag)?.name || 'All'}
+              </button>
+              {tags.length > 0 && (
+                <ul id="nav-tags-dropdown" className="nav__dropdown">
+                  {tags
+                  .filter((tag) => tag.slug !== activeTag)
+                  .map((tag) => (
+                    <li key={tag.slug}>
+                      <button
+                        className="nav__link muted"
+                        onClick={() => setActiveTag(tag.slug)}
+                      >
+                        {tag.name}
+                      </button>
+                    </li>
+                  ))}
+                {activeTag && (
+                  <li>
+                    <button
+                      className="nav__link muted"
+                      onClick={() => setActiveTag('')}
+                    >
+                      All
+                    </button>
+                  </li>
+                )}
+                </ul>
+              )}
+            </li>
           </ul>
-        </li>
-      </ul>
+        </>
+      )}
     </nav>
   )
 }

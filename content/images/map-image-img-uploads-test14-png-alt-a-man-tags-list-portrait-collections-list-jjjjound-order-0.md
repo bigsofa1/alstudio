@@ -2,7 +2,7 @@
 image: /img/uploads/test14.png
 alt: a man
 tags:
-  - portrait
+  - object
 collections:
   - studio
   - jjjjound
