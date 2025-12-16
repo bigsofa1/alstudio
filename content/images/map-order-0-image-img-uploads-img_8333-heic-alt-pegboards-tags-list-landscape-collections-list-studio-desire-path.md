@@ -1,5 +1,5 @@
 ---
-image: /img/uploads/img_8333.heic
+image: /img/uploads/20160707_122703.jpg
 alt: pegboards
 tags:
   - landscape
