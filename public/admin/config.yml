@@ -6,7 +6,7 @@ backend:
   name: github
   repo: bigsofa1/alstudio
   branch: main
-  base_url: https://<your-proxy>.vercel.app
+  base_url: https://decap-oauth-proxy.vercel.app/
   auth_endpoint: /auth
 media_folder: public/img/uploads
 public_folder: /img/uploads
