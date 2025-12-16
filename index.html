@@ -10,9 +10,26 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      if (window.netlifyIdentity) {
+        const goToAdmin = () => window.location.assign('/admin/');
+
+        window.netlifyIdentity.on('init', (user) => {
+          if (user) return;
+          const params = new URLSearchParams(window.location.hash.slice(1));
+          const invite = params.get('invite_token');
+          if (invite) {
+            window.netlifyIdentity.acceptInvite(invite).then(goToAdmin).catch(() => {});
+          }
+        });
+
+        window.netlifyIdentity.on('login', goToAdmin);
+      }
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
