@@ -68,18 +68,30 @@ export default function Nav({
             <li className={`nav__group nav-items__parent ${isProjectsOpen ? 'is-open' : ''}`}>
               <button
                 className="nav__toggle"
-                aria-expanded={isProjectsOpen}
-                aria-controls="nav-items-dropdown"
-                onClick={() => setIsProjectsOpen((open) => !open)}
-              >
-                {projects.find((p) => p.slug === activeProject)?.name || 'Projects'}
-              </button>
-              <ul id="nav-items-dropdown" className="nav__dropdown">
-                {projects
-                  .filter((project) => project.slug !== activeProject)
-                  .map((project) => (
-                    <li key={project.slug}>
-                      <button
+              aria-expanded={isProjectsOpen}
+              aria-controls="nav-items-dropdown"
+              onClick={() => setIsProjectsOpen((open) => !open)}
+            >
+                {activeProject
+                  ? projects.find((p) => p.slug === activeProject)?.name || 'Projects'
+                  : 'All'}
+            </button>
+            <ul id="nav-items-dropdown" className="nav__dropdown">
+                {activeProject && (
+                  <li>
+                    <button
+                      onClick={() => setActiveProject('')}
+                      className="nav__link muted"
+                    >
+                      All
+                    </button>
+                  </li>
+                )}
+              {projects
+                .filter((project) => project.slug !== activeProject)
+                .map((project) => (
+                  <li key={project.slug}>
+                    <button
                         onClick={() => setActiveProject(project.slug)}
                         className="nav__link muted"
                       >

@@ -1,63 +1,59 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Nav from './components/nav.jsx'
 import Project from './components/project.jsx'
 import About from './components/about.jsx'
-import { parseFrontmatter } from './utils/parseFrontMatter.js'
+import { fetchSanity } from './sanity/client.js'
+import { imagesQuery, projectsQuery, tagsQuery } from './sanity/queries.js'
 
 function App() {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [projects, setProjects] = useState([])
+  const [images, setImages] = useState([])
+  const [tagsCollection, setTagsCollection] = useState([])
   const [view, setView] = useState('projects')
   const [activeTag, setActiveTag] = useState('')
-  // load project metadata (json + md)
-  const projects = useMemo(() => {
-    const jsonModules = import.meta.glob('/content/projects/*.json', { eager: true })
-    const mdModules = import.meta.glob('/content/projects/*.md', {
-      eager: true,
-      query: '?raw',
-      import: 'default',
-    })
 
-    const fromJson = Object.values(jsonModules).map((mod) => mod.default ?? mod)
-    const fromMd = Object.values(mdModules).map((raw) => parseFrontmatter(raw))
+  useEffect(() => {
+    let cancelled = false
 
-    return [...fromJson, ...fromMd]
-      .filter((data) => data && (data.slug || data.name))
-      .map((data) => ({
-        slug: data.slug || data.name,
-        name: data.name || data.slug || 'Untitled Project',
-        description: data.description || '',
-      }))
+    async function loadContent() {
+      setLoading(true)
+      setError(null)
+      try {
+        const [projData, imageData, tagData] = await Promise.all([
+          fetchSanity(projectsQuery),
+          fetchSanity(imagesQuery),
+          fetchSanity(tagsQuery),
+        ])
+        if (cancelled) return
+        setProjects(Array.isArray(projData) ? projData : [])
+        setImages(
+          Array.isArray(imageData)
+            ? imageData.map((img) => ({
+                ...img,
+                image: img.image || '',
+                collections: Array.isArray(img.collections) ? img.collections : [],
+                tags: Array.isArray(img.tags) ? img.tags : [],
+              }))
+            : [],
+        )
+        setTagsCollection(Array.isArray(tagData) ? tagData : [])
+      } catch (err) {
+        if (!cancelled)
+          setError(err instanceof Error ? err.message : 'Failed to load content from Sanity')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    loadContent()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  // load images to determine which projects have content
-  const images = useMemo(() => {
-    const imageJsonModules = import.meta.glob('/content/images/*.json', { eager: true })
-    const imageMdModules = import.meta.glob('/content/images/*.md', {
-      eager: true,
-      query: '?raw',
-      import: 'default',
-    })
-    const fromJson = Object.values(imageJsonModules).map((mod) => mod.default ?? mod)
-    const fromMd = Object.values(imageMdModules).map((raw) => parseFrontmatter(raw))
-    return [...fromJson, ...fromMd]
-  }, [])
-
-  // load tag definitions (json + md)
-  const tagsCollection = useMemo(() => {
-    const tagJson = import.meta.glob('/content/tags/*.json', { eager: true })
-    const tagMd = import.meta.glob('/content/tags/*.md', {
-      eager: true,
-      query: '?raw',
-      import: 'default',
-    })
-    const fromJson = Object.values(tagJson).map((mod) => mod.default ?? mod)
-    const fromMd = Object.values(tagMd).map((raw) => parseFrontmatter(raw))
-    return [...fromJson, ...fromMd]
-      .filter((t) => t && (t.slug || t.name))
-      .map((t) => ({
-        slug: t.slug || t.name,
-        name: t.name || t.slug || 'Untitled Tag',
-      }))
-  }, [])
+  const hasInitialData = projects.length > 0 || images.length > 0 || tagsCollection.length > 0
 
   const tagLabelMap = useMemo(() => {
     const map = new Map()
@@ -82,6 +78,7 @@ function App() {
   //controls project active state
   const [activeProject, setActiveProject] = useState('')
   const effectiveActiveProject = useMemo(() => {
+    if (activeProject === '' || activeProject === 'all') return ''
     if (!visibleProjects.length) return ''
     if (visibleProjects.some((p) => p.slug === activeProject)) return activeProject
     const hasStudio = visibleProjects.some((p) => p.slug === 'studio')
@@ -89,7 +86,7 @@ function App() {
   }, [visibleProjects, activeProject])
 
   const tagsForActiveProject = useMemo(() => {
-    if (!effectiveActiveProject) return []
+    if (!effectiveActiveProject) return tagsCollection
     const available = new Set()
     images.forEach((img) => {
       if (Array.isArray(img.collections) && img.collections.includes(effectiveActiveProject)) {
@@ -99,8 +96,22 @@ function App() {
     return tagsCollection.filter((tag) => available.has(tag.slug))
   }, [images, effectiveActiveProject, tagsCollection])
 
-  if (activeTag && !tagsForActiveProject.some((t) => t.slug === activeTag)) {
-    setActiveTag('')
+  useEffect(() => {
+    if (activeTag && !tagsForActiveProject.some((t) => t.slug === activeTag)) {
+      setActiveTag('')
+    }
+  }, [activeTag, tagsForActiveProject])
+
+  if (error && !hasInitialData) {
+    return (
+      <main className="App">
+        <p>Failed to load content from Sanity: {error}</p>
+      </main>
+    )
+  }
+
+  if (loading && !hasInitialData) {
+    return null
   }
 
   return (
@@ -122,6 +133,7 @@ function App() {
         <Project
           activeProject={effectiveActiveProject}
           activeTag={activeTag}
+          images={images}
           setActiveProject={setActiveProject}
           projects={visibleProjects}
         />

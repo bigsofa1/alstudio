@@ -27,7 +27,7 @@ const closeImage = useCallback(() => {
 
 // Filter images by collection and tag
 const visible = images.filter((img) => {
-  const inCollection = img.collections?.includes(activeProject);
+  const inCollection = !activeProject || img.collections?.includes(activeProject);
   const matchesTag = activeTag ? img.tags?.includes(activeTag) : true;
   return inCollection && matchesTag;
 });
