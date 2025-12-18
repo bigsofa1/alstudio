@@ -3,8 +3,7 @@ import { createClient } from '@sanity/client'
 const projectId = import.meta.env.VITE_SANITY_PROJECT_ID
 const dataset = import.meta.env.VITE_SANITY_DATASET
 const apiVersion = import.meta.env.VITE_SANITY_API_VERSION || '2024-01-01'
-const token = import.meta.env.VITE_SANITY_READ_TOKEN
-const useCdn = !token
+const useCdn = true
 
 const missingConfig = !projectId || !dataset
 
@@ -14,7 +13,6 @@ export const sanityClient = missingConfig
       projectId,
       dataset,
       apiVersion,
-      token,
       useCdn,
       perspective: 'published',
     })
