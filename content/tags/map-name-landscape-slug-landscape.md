@@ -1,4 +1,0 @@
----
-name: Landscape
-slug: landscape
----

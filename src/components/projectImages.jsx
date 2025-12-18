@@ -18,8 +18,8 @@ const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
 const touchStartRef = useRef(null);
 const touchThreshold = 30;
-const scrollStepSize = 100; // adjust for multi-step wheel sensitivity
-const touchStepSize = 80; // adjust for multi-step swipe sensitivity
+const scrollStepSize = 100; 
+const touchStepSize = 80;
 const closeButtonRef = useRef(null);
 
 const openImage = useCallback(

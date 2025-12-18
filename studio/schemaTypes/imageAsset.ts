@@ -6,7 +6,6 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({name: 'image', title: 'Image', type: 'image', options: {hotspot: true}}),
-    defineField({name: 'url', title: 'External URL', type: 'url'}),
     defineField({name: 'alt', title: 'Alt Text', type: 'string'}),
     defineField({
       name: 'date',
@@ -22,10 +21,9 @@ export default defineType({
     }),
     defineField({
       name: 'collections',
-      title: 'Collections (projects)',
+      title: 'Collections',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'project'}]}],
     }),
-    defineField({name: 'order', title: 'Order', type: 'number'}),
   ],
 })

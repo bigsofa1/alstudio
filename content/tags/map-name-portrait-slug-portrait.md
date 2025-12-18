@@ -1,4 +1,0 @@
----
-name: Portrait
-slug: portrait
----
