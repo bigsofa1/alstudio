@@ -12,6 +12,7 @@ function App() {
   const [images, setImages] = useState([])
   const [tagsCollection, setTagsCollection] = useState([])
   const [view, setView] = useState('projects')
+  const [isGridView, setIsGridView] = useState(false)
   const [activeTag, setActiveTag] = useState('')
 
   useEffect(() => {
@@ -54,12 +55,6 @@ function App() {
   }, [])
 
   const hasInitialData = projects.length > 0 || images.length > 0 || tagsCollection.length > 0
-
-  const tagLabelMap = useMemo(() => {
-    const map = new Map()
-    tagsCollection.forEach((t) => map.set(t.slug, t.name))
-    return map
-  }, [tagsCollection])
 
   const nonEmptySlugs = useMemo(() => {
     const slugs = new Set()
@@ -134,6 +129,8 @@ function App() {
           activeProject={effectiveActiveProject}
           activeTag={activeTag}
           images={images}
+          isGridView={isGridView}
+          setIsGridView={setIsGridView}
           setActiveProject={setActiveProject}
           projects={visibleProjects}
         />

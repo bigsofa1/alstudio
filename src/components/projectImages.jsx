@@ -2,8 +2,17 @@
 //this was ported from the imagefocus component I developped on another project
 
 import { useRef, useCallback, useEffect, useState } from "react"
+import GridIcon from "../icons/GridIcon.jsx"
+import CarouselIcon from "../icons/CarouselIcon.jsx"
 
-export default function ProjectImages({ images = [], activeProject, activeTag = '', language = "en" }) {
+export default function ProjectImages({
+  images = [],
+  activeProject,
+  activeTag = '',
+  language = "en",
+  isGridView = false,
+  setIsGridView,
+}) {
 const [focusIndex, setFocusIndex] = useState(null)
 const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
@@ -183,16 +192,54 @@ return(
 
         {images?.length > 0 && (
             <div className="project-images">
-            <div className="project-images-bleed">
-                <div className="project-images-carousel">
-                    {visible.map((img, idx) => (
-                        <figure key={img.image} onClick={() => openImage(idx)}
-                        className="project-figure hoverable">
-                            <img src={img.image} alt={img.alt} className="project-image"/>
-                        </figure>
-                    ))}
+            <button
+              type="button"
+              className="hoverable nav__toggle"
+              aria-pressed={isGridView}
+              aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
+              onClick={() => setIsGridView?.((prev) => !prev)}
+              style={{
+                position: 'fixed',
+                left: 'calc(var(--margin) * 2)',
+                bottom: 'calc(var(--margin) * 2)',
+                pointerEvents: 'auto',
+                zIndex: 3,
+              }}
+            >
+              {isGridView ? <GridIcon /> : <CarouselIcon />}
+            </button>
+            {isGridView ? (
+              <div className="project-images-grid-bleed">
+                <div className="project-images-grid" role="list">
+                  {visible.map((img, idx) => (
+                    <figure
+                      key={img.image}
+                      onClick={() => openImage(idx)}
+                      className="project-figure project-figure--grid hoverable"
+                      role="listitem"
+                    >
+                      <img src={img.image} alt={img.alt} className="project-image project-image--grid" />
+                    </figure>
+                  ))}
                 </div>
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="project-images-bleed">
+                  <div className="project-images-carousel">
+                    {visible.map((img, idx) => (
+                      <figure
+                        key={img.image}
+                        onClick={() => openImage(idx)}
+                        className="project-figure hoverable"
+                      >
+                        <img src={img.image} alt={img.alt} className="project-image" />
+                      </figure>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
         </div> 
         )}
 </>

@@ -1,13 +1,20 @@
 .nav {
   position: fixed;
-  top: var(--margin) *2;
-  left: 0;
-  width: 100%;
+  top: calc(var(--margin) * 2);
+  left: calc(var(--margin) * 2);
+  right: calc(var(--margin) * 2);
+  width: auto;
   display: grid;
   grid-template-columns: var(--grid);
+  gap: var(--margin);
   z-index: 3;
   background: transparent;
   pointer-events: none;
+}
+
+.nav :where(h1, button, a) {
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--base-color-light) 55%, transparent);
 }
 
 .nav__link {
@@ -51,7 +58,7 @@
 }
 
 .nav-header {
-  grid-column: 2/span 2;
+  grid-column: 1/span 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -67,6 +74,12 @@
 
 .nav-tags-items {
   grid-column: 10/span 2;
+  pointer-events: auto;
+}
+
+.nav-layout-items {
+  grid-column: 12/span 1;
+  justify-self: end;
   pointer-events: auto;
 }
 

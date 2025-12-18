@@ -9,6 +9,12 @@ export default defineType({
     defineField({name: 'url', title: 'External URL', type: 'url'}),
     defineField({name: 'alt', title: 'Alt Text', type: 'string'}),
     defineField({
+      name: 'date',
+      title: 'Date',
+      type: 'datetime',
+      description: 'Use to sort images chronologically.',
+    }),
+    defineField({
       name: 'tags',
       title: 'Tags',
       type: 'array',

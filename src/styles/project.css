@@ -23,7 +23,7 @@
   align-items: center;
   scrollbar-width: none;
   margin-top: 10vh;
-  scroll-snap-type: x mandatory;
+  /* scroll-snap-type: x mandatory; */
   scroll-behavior: smooth;
   padding-inline: calc((100vw - var(--slide-width)) / 2);
   scroll-padding-inline: calc((100vw - var(--slide-width)) / 2);
@@ -49,6 +49,31 @@
   padding-inline: 0;
 }
 
+.project-images-grid-bleed {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--base-color-light);
+}
+
+.project-images-grid {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--margin);
+  padding: var(--margin);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.project-images-grid::-webkit-scrollbar {
+  display: none;
+}
+
 .project-figure {
   flex: 0 0 auto;
   height: 70vh;
@@ -56,8 +81,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
+  /* scroll-snap-align: center; */
+  /* scroll-snap-stop: always; */
   flex-direction: column;
   cursor: pointer;
 }
@@ -66,6 +91,23 @@
   flex: 0 0 auto;
   max-width: 100%;
   max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.project-figure.project-figure--grid {
+  flex: initial;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-image.project-image--grid {
+  max-width: 100%;
+  max-height: 70vh;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -82,7 +124,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 2;
+  z-index: 3;
   cursor: pointer;
   padding: var(--margin);
   box-sizing: border-box;
