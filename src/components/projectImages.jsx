@@ -4,6 +4,7 @@
 import { useRef, useCallback, useEffect, useState } from "react"
 import GridIcon from "../icons/GridIcon.jsx"
 import CarouselIcon from "../icons/CarouselIcon.jsx"
+import { buildImageUrl } from "../sanity/imageUrl.js"
 
 export default function ProjectImages({
   images = [],
@@ -21,17 +22,30 @@ const touchThreshold = 30;
 const scrollStepSize = 100; 
 const touchStepSize = 80;
 const closeButtonRef = useRef(null);
+const deviceDpr = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
+
+const getImageSrc = useCallback(
+  (imageDoc, { width, height } = {}) =>
+    buildImageUrl(imageDoc?.image, {
+      width,
+      height,
+      fit: 'max',
+      quality: 85,
+      dpr: deviceDpr,
+    }) || imageDoc?.fallbackUrl || (typeof imageDoc?.image === 'string' ? imageDoc.image : ''),
+  [deviceDpr],
+);
 
 const openImage = useCallback(
    (index) => {
     setFocusIndex(index);
    },
-   []
+   [setFocusIndex]
 );
 
 const closeImage = useCallback(() => {
     setFocusIndex(null);
-}, []
+}, [setFocusIndex]
 );
 
 // Filter images by collection and tag
@@ -41,16 +55,17 @@ const visible = images.filter((img) => {
   return inCollection && matchesTag;
 });
 const focusImage = focusIndex !== null ? visible[focusIndex] : null;
+const focusSrc = focusImage ? getImageSrc(focusImage, { width: 2000 }) : '';
 
 const showNext = useCallback(() => {
     if (!visible.length) return;
     setFocusIndex((prev) => (prev + 1) % visible.length);
-  }, [visible.length]);
+  }, [visible.length, setFocusIndex]);
 
   const showPrev = useCallback(() => {
     if (!visible.length) return;
     setFocusIndex((prev) => (prev - 1 + visible.length) % visible.length);
-  }, [visible.length]);
+  }, [visible.length, setFocusIndex]);
 
   useEffect(() => {
     if (focusIndex === null) return;
@@ -157,11 +172,11 @@ return(
             <figure
                 className="image-focus"
                 role="dialog"
-                aria-modal="true"
-                aria-label={focusImage.label || "Expanded project image"}
-                onClick={closeImage}
+            aria-modal="true"
+            aria-label={focusImage.label || "Expanded project image"}
+            onClick={closeImage}
             >
-                <img src={focusImage.image} alt={focusImage.alt || focusImage.label || "Project image"}/>
+                <img src={focusSrc} alt={focusImage.alt || focusImage.label || "Project image"}/>
                 <button
                     type="button"
                     className="hoverable image-focus-btn-exit"
@@ -194,7 +209,7 @@ return(
             <div className="project-images">
             <button
               type="button"
-              className="hoverable nav__toggle"
+              className="hoverable nav__toggle project-layout__toggle"
               aria-pressed={isGridView}
               aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
               onClick={() => setIsGridView?.((prev) => !prev)}
@@ -213,12 +228,12 @@ return(
                 <div className="project-images-grid" role="list">
                   {visible.map((img, idx) => (
                     <figure
-                      key={img.image}
-                      onClick={() => openImage(idx)}
+                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                      
                       className="project-figure project-figure--grid hoverable"
                       role="listitem"
                     >
-                      <img src={img.image} alt={img.alt} className="project-image project-image--grid" />
+                      <img onClick={() => openImage(idx)} src={getImageSrc(img, { width: 1200 })} alt={img.alt} className="project-image project-image--grid" />
                     </figure>
                   ))}
                 </div>
@@ -229,11 +244,11 @@ return(
                   <div className="project-images-carousel">
                     {visible.map((img, idx) => (
                       <figure
-                        key={img.image}
-                        onClick={() => openImage(idx)}
+                        key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                        
                         className="project-figure hoverable"
                       >
-                        <img src={img.image} alt={img.alt} className="project-image" />
+                        <img onClick={() => openImage(idx)} src={getImageSrc(img, { width: 1600 })} alt={img.alt} className="project-image" />
                       </figure>
                     ))}
                   </div>

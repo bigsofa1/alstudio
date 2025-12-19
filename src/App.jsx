@@ -33,7 +33,8 @@ function App() {
           Array.isArray(imageData)
             ? imageData.map((img) => ({
                 ...img,
-                image: img.image || '',
+                image: img.image || null,
+                fallbackUrl: img.fallbackUrl || img.image?.asset?.url || '',
                 collections: Array.isArray(img.collections) ? img.collections : [],
                 tags: Array.isArray(img.tags) ? img.tags : [],
               }))

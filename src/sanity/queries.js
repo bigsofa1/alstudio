@@ -12,7 +12,18 @@ export const tagsQuery = groq`*[_type == "tag"] | order(name asc) {
 }`
 
 export const imagesQuery = groq`*[_type == "imageAsset"] | order(coalesce(date, _createdAt) desc, order asc, _createdAt desc) {
-  "image": coalesce(image.asset->url, url),
+  _id,
+  image{
+    ...,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions
+      }
+    }
+  },
+  "fallbackUrl": coalesce(image.asset->url, url),
   alt,
   "tags": tags[]->slug.current,
   "collections": collections[]->slug.current,

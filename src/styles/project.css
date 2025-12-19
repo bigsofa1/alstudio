@@ -60,6 +60,7 @@
 
 .project-images-grid {
   height: 100%;
+  width:80%;
   margin-inline:auto;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
@@ -161,4 +162,9 @@
   position: absolute;
   top: 25%;
   right: calc(var(--margin) * 2);
+}
+
+
+.project-layout__toggle{
+  z-index:2 !important;
 }

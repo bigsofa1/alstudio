@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@sanity/client": "^6.21.3",
+    "@sanity/image-url": "^2.0.2",
     "groq": "^3.49.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
