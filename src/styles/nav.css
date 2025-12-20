@@ -10,6 +10,7 @@
   z-index: 3;
   background: transparent;
   pointer-events: none;
+  align-items: center;
 }
 
 .nav :where(h1, button, a) {
@@ -25,14 +26,17 @@
 }
 
 .nav__list {
+  grid-row:1;
   list-style: none;
   padding: 0;
   margin: 0;
+  align-self: center;
 }
 
 .nav__group {
   position: relative;
   pointer-events: auto;
+  align-self: center;
 }
 
 .nav__toggle {
@@ -49,7 +53,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  background: transparent;
+  background: var(--base-color-light);
   min-width: 220px;
 }
 
@@ -96,4 +100,18 @@
   align-self: start;
   padding-top: var(--margin);
   pointer-events: auto;
+}
+
+.nav__menu-button {
+  grid-column: 12/span 1;
+  justify-self: end;
+  align-self: center;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
 }

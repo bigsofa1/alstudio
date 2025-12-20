@@ -6,12 +6,25 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({name: 'image', title: 'Image', type: 'image', options: {hotspot: true}}),
-    defineField({name: 'alt', title: 'Alt Text', type: 'string'}),
+    defineField({
+      name: 'caption',
+      title: 'Caption',
+      type: 'text',
+      rows: 2,
+      description: 'Optional caption to display with the image.',
+    }),
+    defineField({name: 'alt', title: 'Alt Text', type: 'string', description: 'Important for SEO and accessibility.'}),
     defineField({
       name: 'date',
       title: 'Date',
       type: 'datetime',
       description: 'Use to sort images chronologically.',
+    }), 
+    defineField({
+      name: 'collections',
+      title: 'Collections',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'project'}]}],
     }),
     defineField({
       name: 'tags',
@@ -19,11 +32,12 @@ export default defineType({
       type: 'array',
       of: [{type: 'reference', to: [{type: 'tag'}]}],
     }),
-    defineField({
-      name: 'collections',
-      title: 'Collections',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'project'}]}],
-    }),
   ],
+  preview: {
+    select: {
+      title: 'alt',
+      subtitle: 'caption',
+      media: 'image',
+    },
+  },
 })

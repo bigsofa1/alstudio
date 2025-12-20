@@ -4,6 +4,9 @@
 
 :root {
   --slide-width: min(80vh, 80vw);
+  --nav-offset: calc(var(--margin) * 6);
+  --grid-columns: 8;
+  --blur: blur(5px);
 }
 
 .project-images {
@@ -51,21 +54,24 @@
 
 .project-images-grid-bleed {
   position: fixed;
-  inset: 0;
+  top: var(--nav-offset);
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
-  height: 100vh;
-  height: 100dvh;
   background: var(--base-color-light);
 }
 
 .project-images-grid {
   height: 100%;
-  width:80%;
-  margin-inline:auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-  gap: var(--margin);
-  padding: var(--margin);
+  width: 100%;
+  margin: 0 var(--margin);
+  display: flex;
+  flex-wrap: wrap;
+  place-content: start space-between;
+  align-items: center;
+  gap: 37.5px 30px;
+  padding: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
@@ -73,6 +79,34 @@
 
 .project-images-grid::-webkit-scrollbar {
   display: none;
+}
+
+.grid-columns-control input[type="range"] {
+ accent-color:var(--base-color-dark);
+}
+
+
+.grid-columns-control {
+  position: fixed;
+  right: calc(var(--margin) * 2);
+  bottom: calc(var(--margin) * 2);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.grid-columns-control::before {
+  content: '';
+  position: absolute;
+  inset: -0.35rem -0.6rem;
+  backdrop-filter:var(--blur);
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 10px;
 }
 
 .project-figure {
@@ -98,7 +132,13 @@
 }
 
 .project-figure.project-figure--grid {
-  flex: initial;
+  flex: 0 0
+    calc(
+      (100% - (var(--grid-columns) - 1) * 30px) / var(--grid-columns)
+    );
+  max-width: calc(
+    (100% - (var(--grid-columns) - 1) * 30px) / var(--grid-columns)
+  );
   width: 100%;
   height: auto;
   display: flex;
@@ -107,9 +147,9 @@
 }
 
 .project-image.project-image--grid {
+  width: 100%;
   max-width: 100%;
-  max-height: 30vh;
-  width: auto;
+  max-height: none;
   height: auto;
   object-fit: contain;
 }
@@ -131,6 +171,22 @@
   box-sizing: border-box;
 }
 
+.image-focus__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 95vw;
+  max-height: 85vh;
+}
+
+.image-focus__media img {
+  max-width: 95vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .image-focus figure {
   position: relative;
 }
@@ -141,9 +197,35 @@
   object-fit: contain;
 }
 
-.image-focus figcaption {
-  justify-self: left;
-  align-items: left;
+.project-image__wrapper {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.image-focus__counter {
+  position: absolute;
+  top: calc(var(--margin) * 2);
+  left: calc(var(--margin) * 2);
+}
+
+.image-focus__caption-row {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--margin) * 2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--margin);
+  width: min(90vw, 900px);
+  min-height: 44px;
+}
+
+.image-focus__caption {
+  flex: 0 1 auto;
+  text-align: center;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .image-focus-btn-exit {
@@ -153,18 +235,37 @@
 }
 
 .image-focus-btn-prev {
-  position: absolute;
-  top: 20%;
-  right: calc(var(--margin) * 2);
+  display: none;
 }
 
 .image-focus-btn-next {
-  position: absolute;
-  top: 25%;
-  right: calc(var(--margin) * 2);
+  display: none;
 }
 
+.image-focus__caption {
+  position: absolute;
+  bottom: var(--margin);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(90vw, 900px);
+  text-align: center;
+  line-height: 1.4;
+}
 
 .project-layout__toggle{
-  z-index:2 !important;
+  position: relative;
+  padding: 0;
+  border-radius: 10px;
+  z-index: 2 !important;
+  overflow: hidden;
+}
+
+.project-layout__toggle::before {
+  content: '';
+  position: absolute;
+  padding:0.5rem;
+  inset: 0;
+  backdrop-filter: var(--blur);
+  pointer-events: none;
+  z-index: -1;
 }

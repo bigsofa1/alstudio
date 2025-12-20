@@ -24,6 +24,7 @@ export const imagesQuery = groq`*[_type == "imageAsset"] | order(coalesce(date, 
     }
   },
   "fallbackUrl": coalesce(image.asset->url, url),
+  caption,
   alt,
   "tags": tags[]->slug.current,
   "collections": collections[]->slug.current,

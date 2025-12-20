@@ -35,6 +35,7 @@ function App() {
                 ...img,
                 image: img.image || null,
                 fallbackUrl: img.fallbackUrl || img.image?.asset?.url || '',
+                caption: img.caption || '',
                 collections: Array.isArray(img.collections) ? img.collections : [],
                 tags: Array.isArray(img.tags) ? img.tags : [],
               }))
