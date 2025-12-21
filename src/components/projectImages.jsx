@@ -37,13 +37,13 @@ const MotionImg = motion.img;
 const MotionFigure = motion.figure;
 
 const getImageSrc = useCallback(
-  (imageDoc, { width, height } = {}) =>
+  (imageDoc, { width, height, quality = 85, dpr = deviceDpr } = {}) =>
     buildImageUrl(imageDoc?.image, {
       width,
       height,
       fit: 'max',
-      quality: 85,
-      dpr: deviceDpr,
+      quality,
+      dpr,
     }) || imageDoc?.fallbackUrl || (typeof imageDoc?.image === 'string' ? imageDoc.image : ''),
   [deviceDpr],
 );
@@ -299,7 +299,7 @@ return(
                         <MotionImg
                           layoutId={getLayoutId(img, `grid-${idx}`)}
                           onClick={() => openImage(idx)}
-                          src={getImageSrc(img, { width: 1200 })}
+                          src={getImageSrc(img, { width: 800, quality: 70, dpr: 1 })}
                           alt={img.alt}
                           className="project-image project-image--grid"
                         />
@@ -342,7 +342,7 @@ return(
                           <MotionImg
                             layoutId={getLayoutId(img, `carousel-${idx}`)}
                             onClick={() => openImage(idx)}
-                            src={getImageSrc(img, { width: 1600 })}
+                            src={getImageSrc(img, { width: 1400 })}
                             alt={img.alt}
                             className="project-image"
                           />
