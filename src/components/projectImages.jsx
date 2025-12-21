@@ -18,6 +18,7 @@ export default function ProjectImages({
 const [focusIndex, setFocusIndex] = useState(null)
 const [isClosing, setIsClosing] = useState(false)
 const [gridColumns, setGridColumns] = useState(5)
+const [sliderRange, setSliderRange] = useState({ min: 3, max: 7 })
 const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
 const touchStartRef = useRef(null);
@@ -194,6 +195,23 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  if (typeof window === 'undefined') return;
+  const updateRange = () => {
+    const isMobile = window.innerWidth <= 768;
+    setSliderRange(isMobile ? { min: 1, max: 3 } : { min: 3, max: 7 });
+  };
+  updateRange();
+  window.addEventListener('resize', updateRange);
+  return () => window.removeEventListener('resize', updateRange);
+}, []);
+
+useEffect(() => {
+  setGridColumns((prev) =>
+    Math.min(Math.max(prev, sliderRange.min), sliderRange.max)
+  );
+}, [sliderRange]);
+
 if  (!images.length) return null;
 const closeLabel = language === "fr" ? "Fermer l'image" : "Close image";
 
@@ -315,8 +333,8 @@ return(
                     className="frosted"
                     id="grid-columns-slider"
                     type="range"
-                    min="3"
-                    max="7"
+                    min={sliderRange.min}
+                    max={sliderRange.max}
                     step="1"
                     value={gridColumns}
                     onChange={(e) => setGridColumns(Number(e.target.value))}
