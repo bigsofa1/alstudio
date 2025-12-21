@@ -37,7 +37,7 @@ export default function Nav({
 
   return (
     <nav className="nav" ref={navRef}>
-      <div className={`nav__group nav-header ${isHeaderOpen ? 'is-open' : ''}`}>
+      <div className={`frosted nav__group nav-header ${isHeaderOpen ? 'is-open' : ''}`}>
         <button
           className="nav__toggle"
           aria-expanded={isHeaderOpen}
@@ -92,7 +92,7 @@ export default function Nav({
                       ? projects.find((p) => p.slug === activeProject)?.name || 'Projects'
                       : 'All'}
                 </button>
-                <ul id="nav-items-dropdown" className="nav__dropdown">
+                <ul id="nav-items-dropdown" className="nav__dropdown frosted">
                     {activeProject && (
                       <li>
                         <button

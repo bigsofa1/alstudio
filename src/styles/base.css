@@ -7,12 +7,16 @@
 :root {
   --font-family: 'Be Vietnam Pro', sans-serif;
   --margin: 1rem;
-  --gutter: 25rem;
-  --font-size: 16px;
+  --gutter: 5vw;
+  --font-size: 15px;
   --base-color-light: #fafafa;
   --base-color-dark: #050505;
-  --text-color-hover: color-mix(in srgb, var(--base-color-dark) 50%, white 100%);
+  --text-color-hover: color-mix(in srgb, var(--base-color-dark) 90%, white 100%);
   --grid: repeat(12, 1fr);
+  --blur: blur(5px);
+  /* Shared frosted-glass utilities */
+  --frost-blur: var(--blur);
+  --frost-bg: color-mix(in srgb, var(--base-color-light) 25%, transparent);
 }
 
 body {
@@ -70,4 +74,20 @@ button:hover {
 .muted {
   color: var(--text-color-hover);
   transform: scale(0.98);
+}
+
+.frosted {
+  position: relative;
+  overflow: visible;
+}
+
+.frosted::before {
+  content: '';
+  position: absolute;
+  inset: -0.35rem -0.6rem;
+  backdrop-filter: var(--frost-blur, var(--blur));
+  background-color: var(--frost-bg, color-mix(in srgb, var(--base-color-light) 25%, transparent));
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 10px;
 }

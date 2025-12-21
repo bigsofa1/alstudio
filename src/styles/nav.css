@@ -13,10 +13,6 @@
   align-items: center;
 }
 
-.nav :where(h1, button, a) {
-  text-shadow:
-    0 1px 2px color-mix(in srgb, var(--base-color-light) 55%, transparent);
-}
 
 .nav__link {
   white-space: nowrap;
@@ -53,7 +49,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  background: var(--base-color-light);
+  /* background: var(--base-color-light); */
   min-width: 220px;
 }
 
@@ -114,4 +110,20 @@
   background: none;
   border: none;
   box-shadow: none;
+  position: relative;
+  overflow: visible;
+  border-radius: 10px;
 }
+
+.nav__menu-button::before {
+  content: '';
+  position: absolute;
+  inset: -0.35rem -0.6rem;
+  backdrop-filter: var(--frost-blur, var(--blur));
+  background-color: var(--frost-bg, color-mix(in srgb, var(--base-color-light) 25%, transparent));
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 10px;
+}
+
+/* Utility: add class .frosted to reuse the same backdrop on any nav element */
