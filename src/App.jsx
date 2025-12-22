@@ -14,6 +14,7 @@ function App() {
   const [view, setView] = useState('projects')
   const [isGridView, setIsGridView] = useState(false)
   const [activeTag, setActiveTag] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -123,6 +124,8 @@ function App() {
         setActiveTag={setActiveTag}
         onSelectAbout={() => setView('about')}
         onSelectProjects={() => setView('projects')}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
       />
       {view === 'about' ? (
         <About />
@@ -135,6 +138,8 @@ function App() {
           setIsGridView={setIsGridView}
           setActiveProject={setActiveProject}
           projects={visibleProjects}
+          showFilters={showFilters}
+          setShowFilters={setShowFilters}
         />
       )}
     </main>

@@ -5,6 +5,8 @@ import { useRef, useCallback, useEffect, useState } from "react"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import GridIcon from "../icons/GridIcon.jsx"
 import CarouselIcon from "../icons/CarouselIcon.jsx"
+import MenuIcon from "../icons/MenuIcon.jsx"
+import MenuIconOpen from "../icons/MenuIconOpen.jsx"
 import { buildImageUrl } from "../sanity/imageUrl.js"
 
 export default function ProjectImages({
@@ -14,6 +16,8 @@ export default function ProjectImages({
   language = "en",
   isGridView = false,
   setIsGridView,
+  showFilters,
+  setShowFilters,
 }) {
 const [focusIndex, setFocusIndex] = useState(null)
 const [isClosing, setIsClosing] = useState(false)
@@ -206,11 +210,10 @@ useEffect(() => {
   return () => window.removeEventListener('resize', updateRange);
 }, []);
 
-useEffect(() => {
-  setGridColumns((prev) =>
-    Math.min(Math.max(prev, sliderRange.min), sliderRange.max)
-  );
-}, [sliderRange]);
+const clampedGridColumns = Math.min(
+  Math.max(gridColumns, sliderRange.min),
+  sliderRange.max
+);
 
 if  (!images.length) return null;
 const closeLabel = language === "fr" ? "Fermer l'image" : "Close image";
@@ -279,30 +282,57 @@ return(
       {images?.length > 0 && (
         <LayoutGroup>
           <div className="project-images">
-            <button
-              type="button"
-              className="frosted hoverable nav__toggle project-layout__toggle"
-              aria-pressed={isGridView}
-              aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
-              onClick={() => setIsGridView?.((prev) => !prev)}
-              style={{
-                position: 'fixed',
-                left: 'calc(var(--margin) * 2)',
-                bottom: 'calc(var(--margin) * 2)',
-                pointerEvents: 'auto',
-                zIndex: 3,
-              }}
-            >
-              {isGridView ? <GridIcon /> : <CarouselIcon />}
-            </button>
+            <div className="project-controls">
+              <div className="project-controls__layout">
+                <button
+                  type="button"
+                  className="frosted hoverable nav__toggle project-layout__toggle"
+                  aria-pressed={isGridView}
+                  aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
+                  onClick={() => setIsGridView?.((prev) => !prev)}
+                >
+                  {isGridView ? <GridIcon /> : <CarouselIcon />}
+                </button>
+              </div>
+              <div className="project-controls__filters">
+                <button
+                  className="frosted hoverable project-filters__toggle"
+                  aria-label="Toggle filters"
+                  aria-pressed={showFilters}
+                  type="button"
+                  onClick={() => setShowFilters?.((open) => !open)}
+                >
+                  {showFilters ? <MenuIconOpen /> : <MenuIcon />}
+                </button>
+              </div>
+              {isGridView && (
+                <div className="project-controls__slider">
+                  <div className="grid-columns-control">
+                    {/* <label htmlFor="grid-columns-slider">
+                      Columns: {gridColumns}
+                    </label> */}
+                    <input
+                      className="frosted"
+                      id="grid-columns-slider"
+                      type="range"
+                      min={sliderRange.min}
+                      max={sliderRange.max}
+                      step="1"
+                      value={clampedGridColumns}
+                      onChange={(e) => setGridColumns(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
             {isGridView ? (
               <div className="project-images-grid-bleed">
                 <div
                   className="project-images-grid"
                   role="list"
-                  style={{ '--grid-columns': gridColumns }}
+                  style={{ '--grid-columns': clampedGridColumns }}
                 >
-                  <AnimatePresence mode="popLayout">
+                  <AnimatePresence mode="sync">
                     {visible.map((img, idx) => (
                       <MotionFigure
                         key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
@@ -325,37 +355,22 @@ return(
                     ))}
                   </AnimatePresence>
                 </div>
-                <div className="grid-columns-control">
-                  {/* <label htmlFor="grid-columns-slider">
-                    Columns: {gridColumns}
-                  </label> */}
-                  <input
-                    className="frosted"
-                    id="grid-columns-slider"
-                    type="range"
-                    min={sliderRange.min}
-                    max={sliderRange.max}
-                    step="1"
-                    value={gridColumns}
-                    onChange={(e) => setGridColumns(Number(e.target.value))}
-                  />
-                </div>
               </div>
             ) : (
               <>
                 <div className="project-images-bleed">
                   <div className="project-images-carousel">
-                    <AnimatePresence mode="popLayout">
-                      {visible.map((img, idx) => (
-                      <MotionFigure
-                        key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                        
-                        className="project-figure hoverable"
-                        layout="position"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                  <AnimatePresence mode="sync">
+                    {visible.map((img, idx) => (
+                    <MotionFigure
+                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                      
+                      className="project-figure hoverable"
+                      layout="position"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
                         >
                           <MotionImg
                             layoutId={getLayoutId(img, `carousel-${idx}`)}

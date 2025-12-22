@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import MenuIcon from '../icons/MenuIcon.jsx'
-import MenuIconOpen from '../icons/MenuIconOpen.jsx'
 
 export default function Nav({
   projects = [],
@@ -12,18 +10,17 @@ export default function Nav({
   onSelectAbout,
   onSelectProjects,
   view,
+  showFilters,
+  setShowFilters,
 }) {
-  const [isHeaderOpen, setIsHeaderOpen] = useState(false)
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
   const [isTagsOpen, setIsTagsOpen] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
   const navRef = useRef(null)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!navRef.current) return
       if (!navRef.current.contains(event.target)) {
-        setIsHeaderOpen(false)
         setIsProjectsOpen(false)
         setIsTagsOpen(false)
         setShowFilters(false)
@@ -37,47 +34,24 @@ export default function Nav({
 
   return (
     <nav className="nav" ref={navRef}>
-      <div className={`frosted nav__group nav-header ${isHeaderOpen ? 'is-open' : ''}`}>
+      <div className="nav__brand frosted"><h1>Alexia Lachance</h1></div>
+      <div className="nav__sections frosted">
         <button
-          className="nav__toggle"
-          aria-expanded={isHeaderOpen}
-          aria-controls="nav-header-dropdown"
-          onClick={() => setIsHeaderOpen((open) => !open)}
+          className={`nav__link ${view === 'projects' ? '' : 'muted'}`}
+          onClick={onSelectProjects}
         >
-          <h1>Alexia Lachance</h1>
+          Projects
         </button>
-        <ul id="nav-header-dropdown" className="nav__dropdown">
-          <li>
-            <button
-              className={`nav__link ${view === 'projects' ? '' : 'muted'}`}
-              onClick={onSelectProjects}
-            >
-              Projects
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav__link ${view === 'about' ? '' : 'muted'}`}
-              onClick={onSelectAbout}
-            >
-              About
-            </button>
-          </li>
-        </ul>
+        <button
+          className={`nav__link ${view === 'about' ? '' : 'muted'}`}
+          onClick={onSelectAbout}
+        >
+          About
+        </button>
       </div>
 
       {view === 'projects' && (
         <>
-          <button
-            className="nav__menu-button"
-            aria-label="Toggle filters"
-            aria-pressed={showFilters}
-            type="button"
-            onClick={() => setShowFilters((open) => !open)}
-          >
-            {showFilters ? <MenuIconOpen /> : <MenuIcon />}
-          </button>
-
           {showFilters && (
             <>
               <ul className="nav__list nav-items">

@@ -6,6 +6,8 @@ export default function Project({
   images = [],
   isGridView,
   setIsGridView,
+  showFilters,
+  setShowFilters,
 }) {
   return (
     <ProjectImages
@@ -14,6 +16,8 @@ export default function Project({
       activeTag={activeTag}
       isGridView={isGridView}
       setIsGridView={setIsGridView}
+      showFilters={showFilters}
+      setShowFilters={setShowFilters}
     />
   )
 }

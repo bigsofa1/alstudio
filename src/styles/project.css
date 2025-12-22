@@ -103,10 +103,6 @@
 
 
 .grid-columns-control {
-  position: fixed;
-  right: calc(var(--margin) * 2);
-  bottom: calc(var(--margin) * 2);
-  z-index: 4;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -151,6 +147,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  will-change: transform, opacity;
 }
 
 .project-image.project-image--grid {
@@ -300,4 +297,49 @@
   pointer-events: none;
   z-index: -1;
   border-radius: 10px;
+}
+
+.project-controls {
+  position: fixed;
+  left: calc(var(--margin) * 2);
+  right: calc(var(--margin) * 2);
+  bottom: var(--margin);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--margin);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.project-controls > * {
+  pointer-events: auto;
+}
+
+.project-controls__layout {
+  display: flex;
+  align-items: center;
+}
+
+.project-controls__filters {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.project-controls__slider {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.project-filters__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  position: relative;
 }

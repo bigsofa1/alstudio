@@ -8,7 +8,7 @@
   --font-family: 'Be Vietnam Pro', sans-serif;
   --margin: 1rem;
   --gutter: 5vw;
-  --font-size: 15px;
+  --font-size: 17px;
   --base-color-light: #fafafa;
   --base-color-dark: #050505;
   --text-color-hover: color-mix(in srgb, var(--base-color-dark) 90%, white 100%);

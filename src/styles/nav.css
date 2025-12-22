@@ -4,25 +4,36 @@
   left: calc(var(--margin) * 2);
   right: calc(var(--margin) * 2);
   width: auto;
-  display: grid;
-  grid-template-columns: var(--grid);
+  display: flex;
+  align-items: center;
   gap: var(--margin);
+  justify-content: space-between;
   z-index: 3;
   background: transparent;
   pointer-events: none;
-  align-items: center;
 }
 
+.nav__brand {
+  pointer-events: auto;
+}
+
+.nav__sections {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--margin);
+  pointer-events: auto;
+  margin-left: auto;
+}
 
 .nav__link {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 160px;
+  pointer-events: auto;
 }
 
 .nav__list {
-  grid-row:1;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -49,7 +60,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  /* background: var(--base-color-light); */
   min-width: 220px;
 }
 
@@ -58,28 +68,20 @@
 }
 
 .nav-header {
-  grid-column: 1/span 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  pointer-events: auto;
+  display: none;
 }
 
 .nav-items {
-  grid-column: 8/span 2;
   display: flex;
   gap: var(--margin);
   pointer-events: auto;
 }
 
 .nav-tags-items {
-  grid-column: 10/span 2;
   pointer-events: auto;
 }
 
 .nav-layout-items {
-  grid-column: 12/span 1;
-  justify-self: end;
   pointer-events: auto;
 }
 
@@ -92,38 +94,9 @@
 }
 
 .nav__context {
-  grid-column: 10/span 2;
   align-self: start;
   padding-top: var(--margin);
   pointer-events: auto;
-}
-
-.nav__menu-button {
-  grid-column: 12/span 1;
-  justify-self: end;
-  align-self: center;
-  pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  box-shadow: none;
-  position: relative;
-  overflow: visible;
-  border-radius: 10px;
-}
-
-.nav__menu-button::before {
-  content: '';
-  position: absolute;
-  inset: -0.35rem -0.6rem;
-  backdrop-filter: var(--frost-blur, var(--blur));
-  background-color: var(--frost-bg, color-mix(in srgb, var(--base-color-light) 25%, transparent));
-  pointer-events: none;
-  z-index: -1;
-  border-radius: 10px;
 }
 
 /* Utility: add class .frosted to reuse the same backdrop on any nav element */
