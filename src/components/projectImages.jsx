@@ -5,24 +5,29 @@ import { useRef, useCallback, useEffect, useState } from "react"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import GridIcon from "../icons/GridIcon.jsx"
 import CarouselIcon from "../icons/CarouselIcon.jsx"
-import MenuIcon from "../icons/MenuIcon.jsx"
-import MenuIconOpen from "../icons/MenuIconOpen.jsx"
 import { buildImageUrl } from "../sanity/imageUrl.js"
 
 export default function ProjectImages({
   images = [],
   activeProject,
   activeTag = '',
+  projects = [],
+  tags = [],
   language = "en",
   isGridView = false,
   setIsGridView,
-  showFilters,
-  setShowFilters,
+  setActiveProject,
+  setActiveTag,
 }) {
 const [focusIndex, setFocusIndex] = useState(null)
 const [isClosing, setIsClosing] = useState(false)
 const [gridColumns, setGridColumns] = useState(5)
 const [sliderRange, setSliderRange] = useState({ min: 3, max: 7 })
+const [isProjectsOpen, setIsProjectsOpen] = useState(false)
+const [isTagsOpen, setIsTagsOpen] = useState(false)
+const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+const controlsRef = useRef(null);
+const filtersRef = useRef(null);
 const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
 const touchStartRef = useRef(null);
@@ -82,18 +87,19 @@ const visible = images.filter((img) => {
   const matchesTag = activeTag ? img.tags?.includes(activeTag) : true;
   return inCollection && matchesTag;
 });
+const visibleCount = visible.length;
 const focusImage = focusIndex !== null ? visible[focusIndex] : null;
 const focusSrc = focusImage ? getImageSrc(focusImage, { width: 2000 }) : '';
 
 const showNext = useCallback(() => {
-    if (!visible.length) return;
-    setFocusIndex((prev) => (prev + 1) % visible.length);
-  }, [visible.length, setFocusIndex]);
+    if (!visibleCount) return;
+    setFocusIndex((prev) => (prev + 1) % visibleCount);
+  }, [visibleCount]);
 
   const showPrev = useCallback(() => {
-    if (!visible.length) return;
-    setFocusIndex((prev) => (prev - 1 + visible.length) % visible.length);
-  }, [visible.length, setFocusIndex]);
+    if (!visibleCount) return;
+    setFocusIndex((prev) => (prev - 1 + visibleCount) % visibleCount);
+  }, [visibleCount]);
 
   useEffect(() => {
     if (focusIndex === null) return;
@@ -210,6 +216,20 @@ useEffect(() => {
   return () => window.removeEventListener('resize', updateRange);
 }, []);
 
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    const container = filtersRef.current || controlsRef.current;
+    if (!container) return;
+    if (!container.contains(event.target)) {
+      setIsProjectsOpen(false);
+      setIsTagsOpen(false);
+      setIsFiltersOpen(false);
+    }
+  };
+  document.addEventListener('pointerdown', handleClickOutside, true);
+  return () => document.removeEventListener('pointerdown', handleClickOutside, true);
+}, []);
+
 const clampedGridColumns = Math.min(
   Math.max(gridColumns, sliderRange.min),
   sliderRange.max
@@ -282,37 +302,108 @@ return(
       {images?.length > 0 && (
         <LayoutGroup>
           <div className="project-images">
-            <div className="project-controls">
-              <div className="project-controls__layout">
+            <div className="project-controls" ref={controlsRef}>
+              <div className="project-controls__filters frosted" ref={filtersRef}>
                 <button
-                  type="button"
-                  className="frosted hoverable nav__toggle project-layout__toggle"
-                  aria-pressed={isGridView}
-                  aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
-                  onClick={() => setIsGridView?.((prev) => !prev)}
+                  className={`filter-master-toggle ${isFiltersOpen ? '' : 'muted'}`}
+                  aria-expanded={isFiltersOpen}
+                  onClick={() => {
+                    setIsFiltersOpen((open) => {
+                      if (open) {
+                        setIsProjectsOpen(false);
+                        setIsTagsOpen(false);
+                      }
+                      return !open;
+                    });
+                  }}
                 >
-                  {isGridView ? <GridIcon /> : <CarouselIcon />}
+                  Filter
                 </button>
+                {isFiltersOpen && (
+                  <ul className="filter-menu nav__list">
+                    <li className={`nav__group filter-menu__group ${isProjectsOpen ? 'is-open' : ''}`}>
+                      <ul id="nav-items-dropdown" className="nav__dropdown filter-menu__dropdown">
+                        {activeProject && (
+                          <li>
+                            <button
+                              onClick={() => setActiveProject?.('')}
+                              className="nav__link muted"
+                            >
+                              All
+                            </button>
+                          </li>
+                        )}
+                        {projects
+                          .filter((project) => project.slug !== activeProject)
+                          .map((project) => (
+                            <li key={project.slug}>
+                              <button
+                                onClick={() => setActiveProject?.(project.slug)}
+                                className="nav__link muted"
+                              >
+                                {project.name}
+                              </button>
+                            </li>
+                          ))}
+                      </ul>
+                      <button
+                        className="nav__toggle filter-menu__toggle"
+                        aria-expanded={isProjectsOpen}
+                        aria-controls="nav-items-dropdown"
+                        onClick={() => setIsProjectsOpen((open) => !open)}
+                      >
+                        {activeProject
+                          ? projects.find((p) => p.slug === activeProject)?.name || 'Projects'
+                          : 'All'}
+                      </button>
+                    </li>
+                    <li className={`nav__group filter-menu__group ${isTagsOpen ? 'is-open' : ''}`}>
+                      {tags.length > 0 && (
+                        <ul id="nav-tags-dropdown" className="nav__dropdown filter-menu__dropdown">
+                          {tags
+                            .filter((tag) => tag.slug !== activeTag)
+                            .map((tag) => (
+                              <li key={tag.slug}>
+                                <button
+                                  className="nav__link muted"
+                                  onClick={() => setActiveTag?.(tag.slug)}
+                                >
+                                  {tag.name}
+                                </button>
+                              </li>
+                            ))}
+                          {activeTag && (
+                            <li>
+                              <button
+                                className="nav__link muted"
+                                onClick={() => setActiveTag?.('')}
+                              >
+                                All
+                              </button>
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                      <button
+                        className="nav__toggle filter-menu__toggle"
+                        aria-expanded={isTagsOpen}
+                        aria-controls="nav-tags-dropdown"
+                        onClick={() => setIsTagsOpen((open) => !open)}
+                      >
+                        {tags.find((t) => t.slug === activeTag)?.name || 'All'}
+                      </button>
+                    </li>
+                  </ul>
+                )}
               </div>
-              <div className="project-controls__filters">
-                <button
-                  className="frosted hoverable project-filters__toggle"
-                  aria-label="Toggle filters"
-                  aria-pressed={showFilters}
-                  type="button"
-                  onClick={() => setShowFilters?.((open) => !open)}
+              <div className="project-controls__spacer" />
+              <div className="project-controls__layout-group frosted">
+                <div
+                  className="project-controls__slider"
+                  style={{ visibility: isGridView ? 'visible' : 'hidden' }}
                 >
-                  {showFilters ? <MenuIconOpen /> : <MenuIcon />}
-                </button>
-              </div>
-              {isGridView && (
-                <div className="project-controls__slider">
                   <div className="grid-columns-control">
-                    {/* <label htmlFor="grid-columns-slider">
-                      Columns: {gridColumns}
-                    </label> */}
                     <input
-                      className="frosted"
                       id="grid-columns-slider"
                       type="range"
                       min={sliderRange.min}
@@ -320,10 +411,22 @@ return(
                       step="1"
                       value={clampedGridColumns}
                       onChange={(e) => setGridColumns(Number(e.target.value))}
+                      disabled={!isGridView}
                     />
                   </div>
                 </div>
-              )}
+                <div className="project-controls__layout">
+                  <button
+                    type="button"
+                    className="hoverable nav__toggle project-layout__toggle"
+                    aria-pressed={isGridView}
+                    aria-label={isGridView ? 'Switch to carousel view' : 'Switch to grid view'}
+                    onClick={() => setIsGridView?.((prev) => !prev)}
+                  >
+                    {isGridView ? <GridIcon /> : <CarouselIcon />}
+                  </button>
+                </div>
+              </div>
             </div>
             {isGridView ? (
               <div className="project-images-grid-bleed">
@@ -332,18 +435,18 @@ return(
                   role="list"
                   style={{ '--grid-columns': clampedGridColumns }}
                 >
-                  <AnimatePresence mode="sync">
+                  <AnimatePresence mode="sync" initial={false}>
                     {visible.map((img, idx) => (
                       <MotionFigure
                         key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                        className="project-figure project-figure--grid hoverable"
-                        role="listitem"
-                        layout="position"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
+                      className="project-figure project-figure--grid hoverable"
+                      role="listitem"
+                      layout="position"
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    >
                         <MotionImg
                           layoutId={getLayoutId(img, `grid-${idx}`)}
                           onClick={() => openImage(idx)}
@@ -360,16 +463,16 @@ return(
               <>
                 <div className="project-images-bleed">
                   <div className="project-images-carousel">
-                  <AnimatePresence mode="sync">
+                  <AnimatePresence mode="sync" initial={false}>
                     {visible.map((img, idx) => (
                     <MotionFigure
                       key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
                       
                       className="project-figure hoverable"
                       layout="position"
-                      initial={{ opacity: 0 }}
+                      initial={{ opacity: 1 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
+                      exit={{ opacity: 1 }}
                       transition={{ duration: 0.2 }}
                         >
                           <MotionImg

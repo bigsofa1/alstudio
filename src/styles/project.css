@@ -84,16 +84,17 @@
 
 .grid-columns-control input[type="range"] {
   accent-color:var(--base-color-dark);
-  width: 10vw;
+  width: 5vw;
   height: 5px;
+  cursor:pointer;
 }
 
 .grid-columns-control input[type="range"]::-webkit-slider-thumb,
 .grid-columns-control input[type="range"]::-moz-range-thumb {
   appearance: none;
   -webkit-appearance: none;
-  width: 12px;  /* adjust as needed */
-  height: 12px; /* adjust as needed */
+  width: 12px; 
+  height: 12px;
   border-radius: 50%;
   background: var(--base-color-dark);
   border: 1px solid var(--base-color-dark);
@@ -107,8 +108,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0;
-  border-radius: 10px;
-  overflow: visible;
+  border-radius: var(--frost-radius);
 }
 
 .project-figure {
@@ -214,15 +214,15 @@
 
 .image-focus__counter {
   position: absolute;
-  top: calc(var(--margin) * 2);
-  left: calc(var(--margin) * 2);
+  top: var(--margin);
+  left: var(--margin);
 }
 
 .image-focus__caption-row {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--margin) * 2);
+  bottom: var(--margin);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -240,8 +240,8 @@
 
 .image-focus-btn-exit {
   position: absolute;
-  top: calc(var(--margin) * 2);
-  right: calc(var(--margin) * 2);
+  top: var(--margin);
+  right: var(--margin);
 }
 
 .image-focus-btn-prev {
@@ -283,33 +283,23 @@
 .project-layout__toggle{
   position: relative;
   padding: 0;
-  border-radius: 10px;
+  border-radius: var(--frost-radius);
   z-index: 2 !important;
   overflow: visible;
 }
 
-.project-layout__toggle::before {
-  content: '';
-  position: absolute;
-  inset: -0.35rem -0.6rem;
-  backdrop-filter: var(--frost-blur);
-  background-color: var(--frost-bg);
-  pointer-events: none;
-  z-index: -1;
-  border-radius: 10px;
-}
-
 .project-controls {
   position: fixed;
-  left: calc(var(--margin) * 2);
-  right: calc(var(--margin) * 2);
+  left: var(--margin);
+  right: var(--margin);
   bottom: var(--margin);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--margin);
   pointer-events: none;
-  z-index: 4;
+  z-index: 2;
+  padding-bottom: 0;
 }
 
 .project-controls > * {
@@ -318,19 +308,64 @@
 
 .project-controls__layout {
   display: flex;
+  align-items: flex-end;
+}
+
+.project-controls__layout-group {
+  display: inline-flex;
   align-items: center;
+  gap: var(--margin);
+  padding: var(--frost-pad-y) var(--frost-pad-x);
 }
 
 .project-controls__filters {
-  flex: 1;
   display: flex;
-  justify-content: flex-end;
+  align-items: flex-end;
+  gap: var(--margin);
+  padding: 0 var(--frost-pad-x);
 }
 
 .project-controls__slider {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.filter-menu-container {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--margin);
+  flex-wrap: nowrap;
+}
+
+.project-controls__spacer {
+  flex: 1;
+}
+
+.filter-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: var(--margin);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-controls .nav__group {
+  align-self: flex-end;
+}
+
+.filter-master-toggle {
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+}
+
+.filter-menu__toggle {
+  text-align: left;
+  padding: 0;
 }
 
 .project-filters__toggle {
@@ -342,4 +377,50 @@
   border: none;
   border-radius: 10px;
   position: relative;
+}
+
+.filter-menu__group {
+  position: relative;
+  isolation: isolate;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  border-radius: var(--frost-radius);
+}
+
+.filter-menu__dropdown {
+  position: absolute;
+  display: none;
+  bottom: calc(100% + var(--frost-pad-y));
+  left: calc(-1 * var(--frost-pad-x));
+  right: calc(-1 * var(--frost-pad-x));
+  overflow: auto;
+  width: auto;
+  max-height: 260px;
+  border-radius: var(--frost-radius);
+  z-index: 2;
+}
+
+.filter-menu__group.is-open .filter-menu__dropdown {
+  display: block;
+}
+
+.filter-menu__dropdown li {
+  margin: 0;
+}
+
+.filter-menu__dropdown .nav__link {
+  display: block;
+  width: 100%;
+  padding: var(--frost-pad-y) var(--frost-pad-x);
+  text-align: left;
+}
+
+.filter-menu__toggle,
+.filter-menu__dropdown {
+  position: relative;
+  z-index: 1;
 }

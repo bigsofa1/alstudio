@@ -3,7 +3,7 @@ import Nav from './components/nav.jsx'
 import Project from './components/project.jsx'
 import About from './components/about.jsx'
 import { fetchSanity } from './sanity/client.js'
-import { imagesQuery, projectsQuery, tagsQuery } from './sanity/queries.js'
+import { imagesQuery, projectsQuery, tagsQuery, aboutQuery } from './sanity/queries.js'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -14,7 +14,7 @@ function App() {
   const [view, setView] = useState('projects')
   const [isGridView, setIsGridView] = useState(false)
   const [activeTag, setActiveTag] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
+  const [aboutContent, setAboutContent] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -23,10 +23,11 @@ function App() {
       setLoading(true)
       setError(null)
       try {
-        const [projData, imageData, tagData] = await Promise.all([
+        const [projData, imageData, tagData, aboutData] = await Promise.all([
           fetchSanity(projectsQuery),
           fetchSanity(imagesQuery),
           fetchSanity(tagsQuery),
+          fetchSanity(aboutQuery),
         ])
         if (cancelled) return
         setProjects(Array.isArray(projData) ? projData : [])
@@ -43,6 +44,7 @@ function App() {
             : [],
         )
         setTagsCollection(Array.isArray(tagData) ? tagData : [])
+        setAboutContent(aboutData?.content || '')
       } catch (err) {
         if (!cancelled)
           setError(err instanceof Error ? err.message : 'Failed to load content from Sanity')
@@ -124,11 +126,9 @@ function App() {
         setActiveTag={setActiveTag}
         onSelectAbout={() => setView('about')}
         onSelectProjects={() => setView('projects')}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
       />
       {view === 'about' ? (
-        <About />
+        <About content={aboutContent} />
       ) : (
         <Project
           activeProject={effectiveActiveProject}
@@ -138,8 +138,8 @@ function App() {
           setIsGridView={setIsGridView}
           setActiveProject={setActiveProject}
           projects={visibleProjects}
-          showFilters={showFilters}
-          setShowFilters={setShowFilters}
+          tags={tagsForActiveProject}
+          setActiveTag={setActiveTag}
         />
       )}
     </main>

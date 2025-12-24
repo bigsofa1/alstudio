@@ -3,21 +3,25 @@ import ProjectImages from './projectImages.jsx'
 export default function Project({
   activeProject,
   activeTag,
+  tags = [],
+  projects = [],
   images = [],
   isGridView,
   setIsGridView,
-  showFilters,
-  setShowFilters,
+  setActiveProject,
+  setActiveTag,
 }) {
   return (
     <ProjectImages
       images={images}
       activeProject={activeProject}
       activeTag={activeTag}
+      tags={tags}
+      projects={projects}
       isGridView={isGridView}
       setIsGridView={setIsGridView}
-      showFilters={showFilters}
-      setShowFilters={setShowFilters}
+      setActiveProject={setActiveProject}
+      setActiveTag={setActiveTag}
     />
   )
 }

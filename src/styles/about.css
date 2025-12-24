@@ -1,3 +1,12 @@
-.about{
-    grid-column: 8/span 4;
+.about {
+  margin: 0 var(--margin);
+  padding: 0;
+  align-self: start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--margin);
+}
+
+.about p {
+  margin: 0;
 }

@@ -31,3 +31,7 @@ export const imagesQuery = groq`*[_type == "imageAsset"] | order(coalesce(date, 
   order,
   date
 }`
+
+export const aboutQuery = groq`*[_type == "about"][0]{
+  content
+}`

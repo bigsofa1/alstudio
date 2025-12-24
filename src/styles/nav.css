@@ -1,8 +1,8 @@
 .nav {
   position: fixed;
-  top: calc(var(--margin) * 2);
-  left: calc(var(--margin) * 2);
-  right: calc(var(--margin) * 2);
+  top: var(--margin);
+  left: var(--margin);
+  right: var(--margin);
   width: auto;
   display: flex;
   align-items: center;
@@ -15,6 +15,24 @@
 
 .nav__brand {
   pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  transform: none !important;
+  transition: none !important;
+  padding: var(--frost-pad-y) var(--frost-pad-x);
+}
+
+.nav__brand:hover {
+  transform: none !important;
+}
+
+.nav__brand-text {
+  display: inline-block;
+  transition: transform 0.1s ease-out;
+}
+
+.nav__brand:hover .nav__brand-text {
+  transform: scale(1.02);
 }
 
 .nav__sections {
@@ -23,15 +41,16 @@
   gap: var(--margin);
   pointer-events: auto;
   margin-left: auto;
+  padding: var(--frost-pad-y) var(--frost-pad-x);
 }
 
 .nav__link {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 160px;
-  pointer-events: auto;
-}
+  overflow: visible;
+  text-overflow: unset;
+  max-width: none;
+  pointer-events: auto;}
+
 
 .nav__list {
   list-style: none;
@@ -55,12 +74,12 @@
 .nav__dropdown {
   position: absolute;
   display: none;
-  top: 100%;
+  bottom: 100%;
   left: 0;
   margin: 0;
   padding: 0;
   list-style: none;
-  min-width: 220px;
+  width: 320px;
 }
 
 .nav__group.is-open .nav__dropdown {
