@@ -3,7 +3,7 @@ import Nav from './components/nav.jsx'
 import Project from './components/project.jsx'
 import About from './components/about.jsx'
 import { fetchSanity } from './sanity/client.js'
-import { imagesQuery, projectsQuery, tagsQuery, aboutQuery } from './sanity/queries.js'
+import { imagesQuery, projectsQuery, tagsQuery, aboutQuery, socialLinksQuery } from './sanity/queries.js'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -14,7 +14,8 @@ function App() {
   const [view, setView] = useState('projects')
   const [isGridView, setIsGridView] = useState(false)
   const [activeTag, setActiveTag] = useState('')
-  const [aboutContent, setAboutContent] = useState('')
+  const [aboutContent, setAboutContent] = useState([])
+  const [socialLinks, setSocialLinks] = useState([])
 
   useEffect(() => {
     let cancelled = false
@@ -23,11 +24,12 @@ function App() {
       setLoading(true)
       setError(null)
       try {
-        const [projData, imageData, tagData, aboutData] = await Promise.all([
+        const [projData, imageData, tagData, aboutData, linksData] = await Promise.all([
           fetchSanity(projectsQuery),
           fetchSanity(imagesQuery),
           fetchSanity(tagsQuery),
           fetchSanity(aboutQuery),
+          fetchSanity(socialLinksQuery),
         ])
         if (cancelled) return
         setProjects(Array.isArray(projData) ? projData : [])
@@ -44,7 +46,8 @@ function App() {
             : [],
         )
         setTagsCollection(Array.isArray(tagData) ? tagData : [])
-        setAboutContent(aboutData?.content || '')
+        setAboutContent(Array.isArray(aboutData?.content) ? aboutData.content : [])
+        setSocialLinks(Array.isArray(linksData) ? linksData : [])
       } catch (err) {
         if (!cancelled)
           setError(err instanceof Error ? err.message : 'Failed to load content from Sanity')
@@ -128,7 +131,7 @@ function App() {
         onSelectProjects={() => setView('projects')}
       />
       {view === 'about' ? (
-        <About content={aboutContent} />
+        <About content={aboutContent} links={socialLinks} />
       ) : (
         <Project
           activeProject={effectiveActiveProject}

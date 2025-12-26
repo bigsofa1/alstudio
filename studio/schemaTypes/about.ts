@@ -6,9 +6,21 @@ const about = {
     {
       name: 'content',
       title: 'Content',
-      type: 'text',
-      rows: 6,
-      description: 'About page content displayed on the site.',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H2', value: 'h2' },
+          ],
+          lists: [
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' },
+          ],
+        },
+      ],
+      description: 'Rich text for About (headings, lists, etc.).',
     },
   ],
 }

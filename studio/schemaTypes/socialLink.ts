@@ -13,7 +13,18 @@ const socialLink = {
       name: 'url',
       title: 'URL',
       type: 'url',
-      validation: (Rule: any) => Rule.required().uri({ allowRelative: false }),
+      validation: (Rule: any) =>
+        Rule.required().uri({
+          allowRelative: false,
+          scheme: ['http', 'https', 'mailto'],
+        }),
+    },
+    {
+      name: 'order',
+      title: 'Order',
+      type: 'number',
+      description: 'Lower numbers appear first.',
+      validation: (Rule: any) => Rule.min(0),
     },
   ],
 }

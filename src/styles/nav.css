@@ -1,6 +1,6 @@
 .nav {
   position: fixed;
-  top: var(--margin);
+  /* top: var(--margin); */
   left: var(--margin);
   right: var(--margin);
   width: auto;

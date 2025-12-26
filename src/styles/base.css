@@ -19,6 +19,12 @@
   --frost-pad-y: 0.2rem;
   --frost-pad-x: 0.4rem;
   --frost-radius: 10px;
+  --highlight: #4d8969;
+}
+
+::selection {
+  background-color: var(--highlight);
+  color: var(--base-color-dark);
 }
 
 body {
@@ -28,6 +34,8 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size);
   white-space: pre-line;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 body::-webkit-scrollbar {
@@ -70,9 +78,22 @@ button:hover {
   transform: scale(1.02);
 }
 
+.hoverable {
+  transition: all 0.1s ease-out;
+}
+
+.hoverable:hover {
+  cursor: pointer;
+  color: color-mix(in srgb, var(--base-color-dark) 80%, #000000 20%);
+  transform: scale(1.05);
+}
+
+.border-top, .border-bottom {
+  border-top: 1px var(--base-color-dark);
+}
+
 .muted {
   color: var(--text-color-hover);
-  /* transform: scale(0.98); */
 }
 
 .frosted {

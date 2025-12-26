@@ -1,7 +1,7 @@
 //this component handles image focusing with navigation and accessibility features
 //this was ported from the imagefocus component I developped on another project
 
-import { useRef, useCallback, useEffect, useState } from "react"
+import { useRef, useCallback, useEffect, useState, useMemo } from "react"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import GridIcon from "../icons/GridIcon.jsx"
 import CarouselIcon from "../icons/CarouselIcon.jsx"
@@ -13,7 +13,7 @@ export default function ProjectImages({
   activeTag = '',
   projects = [],
   tags = [],
-  language = "en",
+  // language = "en",
   isGridView = false,
   setIsGridView,
   setActiveProject,
@@ -36,15 +36,27 @@ const scrollStepSize = 100;
 const touchStepSize = 80;
 const closeButtonRef = useRef(null);
 const closeTimerRef = useRef(null);
+const skipNextFocusCloseRef = useRef(false);
 const deviceDpr = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
+const focusKeyRef = useRef(null);
 const getLayoutId = (img, fallback) =>
   img?._id ||
   img?.image?.asset?._ref ||
   img?.fallbackUrl ||
   (typeof img?.image === 'string' ? img.image : undefined) ||
   `img-${fallback}`;
+const getImageKey = useCallback(
+  (img, fallback) =>
+    img?._id ||
+    img?.image?.asset?._ref ||
+    img?.fallbackUrl ||
+    (typeof img?.image === 'string' ? img.image : undefined) ||
+    `img-${fallback}`,
+  [],
+);
 const MotionImg = motion.img;
 const MotionFigure = motion.figure;
+const MotionDiv = motion.div;
 
 const getImageSrc = useCallback(
   (imageDoc, { width, height, quality = 85, dpr = deviceDpr } = {}) =>
@@ -58,6 +70,26 @@ const getImageSrc = useCallback(
   [deviceDpr],
 );
 
+const visible = useMemo(() => {
+  return images.filter((img) => {
+    const inCollection = !activeProject || img.collections?.includes(activeProject);
+    const matchesTag = activeTag ? img.tags?.includes(activeTag) : true;
+    return inCollection && matchesTag;
+  });
+}, [images, activeProject, activeTag]);
+const visibleRef = useRef(visible);
+useEffect(() => {
+  visibleRef.current = visible;
+}, [visible]);
+
+// Filter images by collection and tag (placed after getImageSrc so it’s defined)
+const visibleCount = visible.length;
+const focusImage =
+  focusIndex !== null
+    ? visible[focusIndex] ?? (visibleCount > 0 ? visible[0] : null)
+    : null;
+const focusSrc = focusImage ? getImageSrc(focusImage, { width: 2000 }) : '';
+
 const openImage = useCallback(
    (index) => {
     if (closeTimerRef.current) {
@@ -65,9 +97,11 @@ const openImage = useCallback(
       closeTimerRef.current = null;
     }
     setIsClosing(false);
+    const img = visible[index];
+    focusKeyRef.current = getImageKey(img, index);
     setFocusIndex(index);
    },
-   [setFocusIndex]
+   [setFocusIndex, visible, getImageKey]
 );
 
 const closeImage = useCallback(() => {
@@ -81,28 +115,77 @@ const closeImage = useCallback(() => {
 }, [focusIndex, setFocusIndex]
 );
 
-// Filter images by collection and tag
-const visible = images.filter((img) => {
-  const inCollection = !activeProject || img.collections?.includes(activeProject);
-  const matchesTag = activeTag ? img.tags?.includes(activeTag) : true;
-  return inCollection && matchesTag;
-});
-const visibleCount = visible.length;
-const focusImage = focusIndex !== null ? visible[focusIndex] : null;
-const focusSrc = focusImage ? getImageSrc(focusImage, { width: 2000 }) : '';
+const handleFocusClick = useCallback(
+  (event) => {
+    if (isFiltersOpen) {
+      event.stopPropagation();
+      setIsFiltersOpen(false);
+      setIsProjectsOpen(false);
+      setIsTagsOpen(false);
+      return;
+    }
+    closeImage();
+  },
+  [isFiltersOpen, closeImage],
+);
 
 const showNext = useCallback(() => {
-    if (!visibleCount) return;
-    setFocusIndex((prev) => (prev + 1) % visibleCount);
-  }, [visibleCount]);
+    const list = visibleRef.current;
+    const count = list.length;
+    if (!count) return;
+    setFocusIndex((prev) => {
+      const next = (prev + 1) % count;
+      const img = list[next];
+      focusKeyRef.current = getImageKey(img, next);
+      return next;
+    });
+  }, [getImageKey]);
 
   const showPrev = useCallback(() => {
-    if (!visibleCount) return;
-    setFocusIndex((prev) => (prev - 1 + visibleCount) % visibleCount);
-  }, [visibleCount]);
+    const list = visibleRef.current;
+    const count = list.length;
+    if (!count) return;
+    setFocusIndex((prev) => {
+      const next = (prev - 1 + count) % count;
+      const img = list[next];
+      focusKeyRef.current = getImageKey(img, next);
+      return next;
+    });
+  }, [getImageKey]);
 
   useEffect(() => {
     if (focusIndex === null) return;
+
+    const asyncSetIndex = (nextIdx) =>
+      setTimeout(() => {
+        setFocusIndex(nextIdx);
+      }, 0);
+
+    const list = visible;
+    const count = list.length;
+    const key = focusKeyRef.current;
+    if (key) {
+      const newIdx = list.findIndex((img, idx) => getImageKey(img, idx) === key);
+      if (count === 0) return;
+      if (newIdx === -1) {
+        // Focused image no longer visible: keep image-focus open and jump to first item
+        asyncSetIndex(0);
+        focusKeyRef.current = getImageKey(list[0], 0);
+        return;
+      }
+      if (newIdx !== focusIndex) {
+        asyncSetIndex(newIdx);
+        return;
+      }
+    } else if (!count || focusIndex >= count) {
+      if (count === 0) {
+        return;
+      }
+      const newIdx = Math.min(focusIndex ?? 0, count - 1);
+      asyncSetIndex(newIdx);
+      focusKeyRef.current = getImageKey(list[newIdx], newIdx);
+      return;
+    }
 
     if (closeButtonRef.current){
       closeButtonRef.current.focus();
@@ -123,7 +206,7 @@ const showNext = useCallback(() => {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [focusIndex, showNext, showPrev, closeImage]);
+  }, [focusIndex, showNext, showPrev, closeImage, visible, getImageKey]);
 
 useEffect(() => {
   if (focusIndex === null) return;
@@ -156,11 +239,20 @@ useEffect(() => {
   if (focusIndex === null) return;
 
   const handleTouchStart = (event) => {
+    if (event.touches.length > 1) {
+      // Allow native pinch/zoom
+      touchStartRef.current = null;
+      return;
+    }
     const touch = event.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
   };
 
   const handleTouchMove = (event) => {
+    if (event.touches.length > 1) {
+      // Allow native pinch/zoom
+      return;
+    }
     if (!touchStartRef.current) return;
 
     const touch = event.touches[0];
@@ -221,9 +313,12 @@ useEffect(() => {
     const container = filtersRef.current || controlsRef.current;
     if (!container) return;
     if (!container.contains(event.target)) {
+      skipNextFocusCloseRef.current = false;
+      // Close filter menus, but keep image focus open
       setIsProjectsOpen(false);
       setIsTagsOpen(false);
       setIsFiltersOpen(false);
+      if (focusIndex !== null) return;
     }
   };
   document.addEventListener('pointerdown', handleClickOutside, true);
@@ -236,39 +331,42 @@ const clampedGridColumns = Math.min(
 );
 
 if  (!images.length) return null;
-const closeLabel = language === "fr" ? "Fermer l'image" : "Close image";
+// const closeLabel = language === "fr" ? "Fermer l'image" : "Close image";
 
 return(
     <>
-      {focusImage && (
+      {focusIndex !== null && visibleCount > 0 && focusImage && (
         <figure
           className={`image-focus ${isClosing ? 'image-focus--closing' : ''}`}
           role="dialog"
           aria-modal="true"
           aria-label={focusImage.label || "Expanded project image"}
-          onClick={closeImage}
+          onClick={handleFocusClick}
         >
-          <div
-            className="image-focus__counter"
-            aria-label={`Image ${focusIndex + 1} of ${visible.length}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {`${focusIndex + 1}/${visible.length}`}
+          <div className="image-focus__thumbs-row" onClick={(e) => e.stopPropagation()}>
+            <div className="image-focus__thumbs" role="list">
+              {visible.map((img, idx) => (
+                <button
+                  key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                  type="button"
+                  className={`image-focus__thumb ${idx === focusIndex ? 'is-active' : ''}`}
+                  onClick={() => setFocusIndex(idx)}
+                  aria-label={`Go to image ${idx + 1}`}
+                  role="listitem"
+                >
+                  <img
+                    src={getImageSrc(img, { width: 120, quality: 60, dpr: 1 })}
+                    alt={img.alt || img.label || `Image ${idx + 1}`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
           <img
             src={focusSrc}
             alt={focusImage.alt || focusImage.label || "Project image"}
             className="project-image"
           />
-          <button
-            type="button"
-            className="hoverable image-focus-btn-exit"
-            onClick={closeImage}
-            ref={closeButtonRef}
-            aria-label={closeLabel}
-          >
-            {language === "fr" ? "Fermer" : "Close"}
-          </button>
           <button
             type="button"
             className="hoverable image-focus-btn-prev"
@@ -291,11 +389,12 @@ return(
           >
             &gt;
           </button>
-          {focusImage.caption && (
-            <figcaption className="image-focus__caption">
-              {focusImage.caption}
-            </figcaption>
-          )}
+          <div className="image-focus__caption-row">
+            {/* <span className="image-focus__counter">{`${focusIndex + 1}/${visible.length}`}</span> */}
+            <div className="image-focus__caption">
+              {focusImage.caption || ''}
+            </div>
+          </div>
         </figure>
       )}
 
@@ -317,7 +416,7 @@ return(
                     });
                   }}
                 >
-                  Filter
+                  Sort
                 </button>
                 {isFiltersOpen && (
                   <ul className="filter-menu nav__list">
@@ -430,34 +529,32 @@ return(
             </div>
             {isGridView ? (
               <div className="project-images-grid-bleed">
-                <div
+                <MotionDiv
                   className="project-images-grid"
                   role="list"
                   style={{ '--grid-columns': clampedGridColumns }}
+                  layout
+                  layoutDependency={clampedGridColumns}
+                  transition={{ layout: { duration: focusIndex === null ? 0.25 : 0, ease: 'easeInOut' } }}
                 >
-                  <AnimatePresence mode="sync" initial={false}>
-                    {visible.map((img, idx) => (
-                      <MotionFigure
-                        key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                      className="project-figure project-figure--grid hoverable"
+                  {visible.map((img, idx) => (
+                    <MotionFigure
+                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                      className="project-figure project-figure--grid"
                       role="listitem"
-                      layout="position"
-                      initial={{ opacity: 1 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
+                      layout
+                      transition={{ layout: { duration: focusIndex === null ? 0.25 : 0, ease: 'easeInOut' } }}
                     >
-                        <MotionImg
-                          layoutId={getLayoutId(img, `grid-${idx}`)}
-                          onClick={() => openImage(idx)}
-                          src={getImageSrc(img, { width: 800, quality: 70, dpr: 1 })}
-                          alt={img.alt}
-                          className="project-image project-image--grid"
-                        />
-                      </MotionFigure>
-                    ))}
-                  </AnimatePresence>
-                </div>
+                      <MotionImg
+                        layoutId={getLayoutId(img, `grid-${idx}`)}
+                        onClick={() => openImage(idx)}
+                        src={getImageSrc(img, { width: 800, quality: 70, dpr: 1 })}
+                        alt={img.alt}
+                        className="project-image project-image--grid"
+                      />
+                    </MotionFigure>
+                  ))}
+                </MotionDiv>
               </div>
             ) : (
               <>
@@ -468,12 +565,12 @@ return(
                     <MotionFigure
                       key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
                       
-                      className="project-figure hoverable"
+                      className="project-figure"
                       layout="position"
                       initial={{ opacity: 1 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: focusIndex === null ? 0.2 : 0 }}
                         >
                           <MotionImg
                             layoutId={getLayoutId(img, `carousel-${idx}`)}

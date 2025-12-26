@@ -21,14 +21,12 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  width: 100%;
+  width: 100vw;
   align-items: center;
   scrollbar-width: none;
-  margin-top: 10vh;
-  /* scroll-snap-type: x mandatory; */
+  margin: 0;
   scroll-behavior: smooth;
-  padding-inline: calc((100vw - var(--slide-width)) / 2);
-  scroll-padding-inline: calc((100vw - var(--slide-width)) / 2);
+  padding: 0;
 }
 
 .project-images-carousel::-webkit-scrollbar {
@@ -42,9 +40,17 @@
 }
 
 .project-images-bleed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .project-images-bleed .project-images-carousel {
@@ -66,7 +72,7 @@
   width: 100%;
   box-sizing: border-box;
   margin: 0;
-  padding: calc(var(--margin) * 4) var(--margin) var(--margin);
+  padding: calc(var(--margin) * 2) var(--margin) var(--margin);
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -156,6 +162,8 @@
   max-height: none;
   height: auto;
   object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .image-focus {
@@ -212,36 +220,76 @@
   max-width: 100%;
 }
 
-.image-focus__counter {
-  position: absolute;
-  top: var(--margin);
-  left: var(--margin);
-}
-
 .image-focus__caption-row {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   bottom: var(--margin);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--margin);
-  width: min(90vw, 900px);
-  min-height: 44px;
+  padding: 0 calc(var(--margin) * 1.25);
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
-.image-focus__caption {
-  flex: 0 1 auto;
-  text-align: center;
-  line-height: 1.4;
-  margin: 0;
+.image-focus__thumbs-row {
+  position: absolute;
+  top: var(--margin);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-focus__thumbs-row + .image-focus__caption-row {
+  top: auto;
+}
+
+.image-focus__thumbs {
+  display: inline-flex;
+  gap: calc(var(--margin) * 0.1);
+}
+
+.image-focus__thumb {
+  padding: 0;
+  border: none;
+  background: none;
+  width: auto;
+  height: auto;
+  max-height: 25px;
+  overflow: hidden;
+  opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.image-focus__thumb.is-active {
+  opacity: 1;
+  transform: scale(1.5);
+}
+
+.image-focus__thumb img {
+  height: 100%;
+  width: auto;
+  max-height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+.image-focus__thumb:hover {
+  transform: scale(1.5);
+  opacity: 1;
 }
 
 .image-focus-btn-exit {
-  position: absolute;
-  top: var(--margin);
-  right: var(--margin);
+  position: static;
 }
 
 .image-focus-btn-prev {
@@ -253,13 +301,21 @@
 }
 
 .image-focus__caption {
-  position: absolute;
-  bottom: var(--margin);
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: min(90vw, 900px);
+  flex: 1;
   text-align: center;
   line-height: 1.4;
+  margin: 0;
+  min-height: 1.4em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image-focus__counter {
+  position: absolute;
+  left: var(--margin);
+  white-space: nowrap;
+  pointer-events: auto;
 }
 
 @keyframes image-focus-fade {
@@ -298,7 +354,7 @@
   justify-content: space-between;
   gap: var(--margin);
   pointer-events: none;
-  z-index: 2;
+  z-index: 6;
   padding-bottom: 0;
 }
 
@@ -309,6 +365,8 @@
 .project-controls__layout {
   display: flex;
   align-items: flex-end;
+  position: relative;
+  z-index: 3;
 }
 
 .project-controls__layout-group {
@@ -316,6 +374,10 @@
   align-items: center;
   gap: var(--margin);
   padding: var(--frost-pad-y) var(--frost-pad-x);
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
 .project-controls__filters {
@@ -323,6 +385,13 @@
   align-items: flex-end;
   gap: var(--margin);
   padding: 0 var(--frost-pad-x);
+  position: relative;
+  z-index: 7;
+}
+
+.image-focus ~ .project-images .project-controls__layout-group {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .project-controls__slider {

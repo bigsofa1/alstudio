@@ -1,26 +1,26 @@
-const extractText = (value) => {
-  if (typeof value === 'string') return value
-  if (Array.isArray(value)) {
-    // Handle Portable Text arrays by concatenating child text
-    return value
-      .map((block) =>
-        Array.isArray(block?.children)
-          ? block.children.map((child) => child?.text || '').join('')
-          : '',
-      )
-      .filter(Boolean)
-      .join('\n\n')
-  }
-  return ''
-}
+import { PortableText } from '@portabletext/react'
 
-export default function About({ content = '' }) {
-  const text = extractText(content)
-  if (!text) return null
+export default function About({ content = [], links = [] }) {
+  if (!content || content.length === 0) return null
 
   return (
-    <div className="about">
-      <p>{text}</p>
+    <div className="about border-top">
+      <div className="about__content">
+        <PortableText value={content} />
+      </div>
+      {Array.isArray(links) && links.length > 0 && (
+        <div className="about__links">
+          <ul>
+            {links.map((link) => (
+              <li className="border-bottom" key={link._id || link.url}>
+                <a className="hoverable" href={link.url} target="_blank" rel="noreferrer">
+                  {link.name || link.url}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

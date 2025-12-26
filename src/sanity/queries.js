@@ -35,3 +35,10 @@ export const imagesQuery = groq`*[_type == "imageAsset"] | order(coalesce(date, 
 export const aboutQuery = groq`*[_type == "about"][0]{
   content
 }`
+
+export const socialLinksQuery = groq`*[_type == "socialLink"] | order(order asc, name asc) {
+  _id,
+  name,
+  url,
+  order
+}`

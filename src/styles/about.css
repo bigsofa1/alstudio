@@ -1,6 +1,7 @@
 .about {
   margin: 0 var(--margin);
-  padding: 0;
+  margin-top: 0;
+  padding: calc(var(--margin) * 4) 0 0 0;
   align-self: start;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -9,4 +10,49 @@
 
 .about p {
   margin: 0;
+  white-space: pre-wrap;
+}
+
+.about__content {
+  grid-column: 1 / 2;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.about__content * {
+  white-space: inherit;
+}
+
+.about__content p,
+.about__content h2,
+.about__content li {
+  white-space: pre-wrap;
+  tab-size: 4;
+}
+
+.about__content p {
+  margin-bottom: calc(var(--margin) * 0.5);
+}
+
+.about__content h2 {
+  padding-left: var(--margin);
+}
+
+.about__links {
+  grid-column: 2 / 3;
+  align-self: start;
+}
+
+.about__links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.about__links a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
 }
