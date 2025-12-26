@@ -350,7 +350,10 @@ return(
                   key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
                   type="button"
                   className={`image-focus__thumb ${idx === focusIndex ? 'is-active' : ''}`}
-                  onClick={() => setFocusIndex(idx)}
+                  onClick={() => {
+                    focusKeyRef.current = getImageKey(img, idx);
+                    setFocusIndex(idx);
+                  }}
                   aria-label={`Go to image ${idx + 1}`}
                   role="listitem"
                 >
