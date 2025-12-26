@@ -4,13 +4,22 @@ export default function Nav({
   onSelectAbout,
   onSelectProjects,
   view,
+  setActiveProject,
+  setActiveTag,
 }) {
   const navRef = useRef(null)
 
 
   return (
     <nav className="nav" ref={navRef}>
-      <button className="nav__brand frosted" onClick={onSelectProjects}>
+      <button
+        className="nav__brand frosted"
+        onClick={() => {
+          setActiveProject?.('')
+          setActiveTag?.('')
+          onSelectProjects?.()
+        }}
+      >
         <h1 className="nav__brand-text">Alexia Lachance</h1>
       </button>
       <div className="nav__sections frosted">

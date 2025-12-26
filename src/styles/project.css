@@ -67,45 +67,52 @@
   /* background: var(--base-color-light); */
 }
 
-.project-images-grid {
-  height: 100%;
+.project-images-list {
+  height: 100vh;
   width: 100%;
+  max-width: 1400px;
   box-sizing: border-box;
-  margin: 0;
+  margin: 0 auto;
   padding: calc(var(--margin) * 2) var(--margin) var(--margin);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  justify-content: center;
+  justify-items: start;
   align-content: flex-start;
-  align-items: center;
+  align-items: start;
   gap: 37.5px 30px;
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 
-.project-images-grid::-webkit-scrollbar {
+.project-images-list--carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--margin);
+  width: calc(100vw + (var(--margin) * 2));
+  max-width: none;
+  padding: 0;
+  margin: 0 calc(var(--margin) * -1);
+  scroll-padding-left: var(--margin);
+  scroll-margin-left: var(--margin);
+  overflow-y: hidden;
+  overflow-x: auto;
+  min-height: 100vh;
+}
+
+.project-images-list--carousel::before {
+  content: '';
+  flex: 0 0 var(--margin);
+}
+
+.project-images-list::-webkit-scrollbar,
+.project-images-list--carousel::-webkit-scrollbar {
   display: none;
-}
-
-.grid-columns-control input[type="range"] {
-  accent-color:var(--base-color-dark);
-  width: 5vw;
-  height: 5px;
-  cursor:pointer;
-}
-
-.grid-columns-control input[type="range"]::-webkit-slider-thumb,
-.grid-columns-control input[type="range"]::-moz-range-thumb {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 12px; 
-  height: 12px;
-  border-radius: 50%;
-  background: var(--base-color-dark);
-  border: 1px solid var(--base-color-dark);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--base-color-dark) 30%, transparent);
-  cursor: pointer;
 }
 
 
@@ -141,15 +148,9 @@
 }
 
 .project-figure.project-figure--grid {
-  flex: 0 0
-    calc(
-      (100% - (var(--grid-columns) - 1) * 30px) / var(--grid-columns)
-    );
-  max-width: calc(
-    (100% - (var(--grid-columns) - 1) * 30px) / var(--grid-columns)
-  );
   width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,11 +160,11 @@
 .project-image.project-image--grid {
   width: 100%;
   max-width: 100%;
-  max-height: none;
-  height: auto;
+  height: 100%;
+  max-height: 100%;
   object-fit: contain;
   display: block;
-  margin: 0 auto;
+  margin: auto;
 }
 
 .image-focus {
@@ -173,6 +174,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* better centering on mobile Safari */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -250,7 +252,7 @@
 
 .image-focus__thumbs {
   display: inline-flex;
-  gap: calc(var(--margin) * 0.1);
+  /* gap: var(--margin); */
 }
 
 .image-focus__thumb {
@@ -261,7 +263,6 @@
   height: auto;
   max-height: 25px;
   overflow: hidden;
-  opacity: 0.7;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -271,7 +272,6 @@
 }
 
 .image-focus__thumb.is-active {
-  opacity: 1;
   transform: scale(1.5);
 }
 
@@ -285,7 +285,6 @@
 
 .image-focus__thumb:hover {
   transform: scale(1.5);
-  opacity: 1;
 }
 
 .image-focus-btn-exit {
@@ -492,4 +491,132 @@
 .filter-menu__dropdown {
   position: relative;
   z-index: 1;
+}
+
+
+.grid-columns-control input[type="range"] {
+  accent-color: var(--base-color-dark);
+  width: 10vw;
+  max-width: 120px;
+  height: 2px;
+  cursor: pointer;
+  background: var(--base-color-dark);
+  border: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.grid-columns-control input[type="range"]::-webkit-slider-thumb,
+.grid-columns-control input[type="range"]::-moz-range-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 6px; 
+  height: 6px;
+  border-radius: 50%;
+  background: var(--base-color-dark);
+  border: 1px solid var(--base-color-dark);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--base-color-dark) 30%, transparent);
+  cursor: pointer;
+}
+
+/* .grid-columns-control input[type="range"]::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--base-color-dark);
+  border: none;
+} */
+
+.grid-columns-control input[type="range"]::-moz-range-track {
+  height: 2px;
+  background: var(--base-color-dark);
+  border: none;
+}
+
+
+/* media queries */
+
+@media (max-width: 500px) {
+  .project-images-grid {
+    padding: calc(var(--margin) * 4) var(--margin) var(--margin);
+    gap: 16px 12px;
+  }
+
+  .project-controls__filters {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  .filter-menu-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--margin);
+    text-align: left;
+    width: 100%;
+  }
+
+  .filter-menu__group {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: calc(var(--margin) * 0.5);
+    text-align: left;
+    width: 100%;
+  }
+
+  .filter-menu__dropdown {
+    position: static;
+    display: none;
+    flex-wrap: wrap;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    max-height: none;
+    padding: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    align-self: flex-start;
+  }
+
+  .filter-menu__group.is-open .filter-menu__dropdown {
+    display: flex;
+  }
+
+  .filter-menu__dropdown li {
+    display: block;
+  }
+
+  .filter-menu__toggle {
+    text-align: left;
+    align-self: flex-start;
+    width: auto;
+  }
+
+  .project-controls__filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-controls__filters > .filter-menu {
+    order: 1;
+  }
+
+  .project-controls__filters > .filter-master-toggle {
+    order: 3;
+    align-self: flex-start;
+  }
+
+  .filter-menu li:nth-child(1) {
+    order: 2; /* Collection */
+  }
+
+  .filter-menu li:nth-child(2) {
+    order: 1; /* Tag */
+  }
 }

@@ -22,10 +22,10 @@
   --highlight: #4d8969;
 }
 
-::selection {
+/* ::selection {
   background-color: var(--highlight);
   color: var(--base-color-dark);
-}
+} */
 
 body {
   margin: 0 var(--margin);
@@ -111,4 +111,13 @@ button:hover {
   pointer-events: none;
   z-index: -1;
   border-radius: var(--frost-radius);
+}
+
+
+
+@media (max-width: 500px) {
+ :root {
+    --margin: 1rem;
+    --font-size:15px;
+  }
 }

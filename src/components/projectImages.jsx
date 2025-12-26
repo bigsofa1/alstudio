@@ -31,9 +31,10 @@ const filtersRef = useRef(null);
 const scrollThreshold = 35;
 const scrollAccumulator = useRef(0);
 const touchStartRef = useRef(null);
-const touchThreshold = 30;
+const touchAccumulator = useRef(0);
+const touchThreshold = 50;
 const scrollStepSize = 100; 
-const touchStepSize = 80;
+const touchStepSize = 130;
 const closeButtonRef = useRef(null);
 const closeTimerRef = useRef(null);
 const skipNextFocusCloseRef = useRef(false);
@@ -256,26 +257,33 @@ useEffect(() => {
     if (!touchStartRef.current) return;
 
     const touch = event.touches[0];
-    const deltaX = touchStartRef.current.x - touch.clientX;
-    const deltaY = touchStartRef.current.y - touch.clientY;
-    const primaryDelta =
-      Math.abs(deltaX) >= Math.abs(deltaY) ? deltaX : deltaY;
+    const deltaX = touchStartRef.current.x - touch.clientX; // left swipe => positive deltaX
+    // Only use horizontal intent; ignore vertical to mimic trackpad feel
 
-    if (Math.abs(primaryDelta) < touchThreshold) return;
+    touchAccumulator.current += deltaX;
 
-    event.preventDefault();
-    const steps = Math.max(1, Math.floor(Math.abs(primaryDelta) / touchStepSize));
-    if (primaryDelta > 0) {
-      for (let i = 0; i < steps; i += 1) showNext();
-    } else {
-      for (let i = 0; i < steps; i += 1) showPrev();
+    if (Math.abs(touchAccumulator.current) >= touchThreshold) {
+      event.preventDefault();
+      const steps = Math.max(
+        1,
+        Math.floor(Math.abs(touchAccumulator.current) / touchStepSize),
+      );
+      const goPrev = touchAccumulator.current > 0; // left = prev, right = next
+      for (let i = 0; i < steps; i += 1) {
+        goPrev ? showPrev() : showNext();
+      }
+      // reset accumulator after firing to prevent jitter on small residual movements
+      touchAccumulator.current = 0;
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
     }
 
-    touchStartRef.current = null;
+    // update last point so continued hold keeps accruing movement
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
   };
 
   const handleTouchEnd = () => {
     touchStartRef.current = null;
+    touchAccumulator.current = 0;
   };
 
   window.addEventListener("touchstart", handleTouchStart, { passive: false });
@@ -301,7 +309,8 @@ useEffect(() => {
   if (typeof window === 'undefined') return;
   const updateRange = () => {
     const isMobile = window.innerWidth <= 768;
-    setSliderRange(isMobile ? { min: 1, max: 3 } : { min: 3, max: 7 });
+    setSliderRange(isMobile ? { min: 1, max: 3 } : { min: 3, max: 8 });
+    // setTouchStepMultiplier(isMobile ? 2 : 1.5);
   };
   updateRange();
   window.addEventListener('resize', updateRange);
@@ -530,65 +539,32 @@ return(
                 </div>
               </div>
             </div>
-            {isGridView ? (
-              <div className="project-images-grid-bleed">
-                <MotionDiv
-                  className="project-images-grid"
-                  role="list"
-                  style={{ '--grid-columns': clampedGridColumns }}
+            <MotionDiv
+              className={`project-images-list ${isGridView ? 'project-images-list--grid' : 'project-images-list--carousel'}`}
+              role="list"
+              style={{ '--grid-columns': clampedGridColumns }}
+              layout
+              layoutDependency={`${isGridView ? `grid-${clampedGridColumns}` : 'carousel'}`}
+              transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
+            >
+              {visible.map((img, idx) => (
+                <MotionFigure
+                  key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                  className={`project-figure ${isGridView ? 'project-figure--grid' : 'project-figure--carousel'}`}
+                  role="listitem"
                   layout
-                  layoutDependency={clampedGridColumns}
-                  transition={{ layout: { duration: focusIndex === null ? 0.25 : 0, ease: 'easeInOut' } }}
+                  transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
                 >
-                  {visible.map((img, idx) => (
-                    <MotionFigure
-                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                      className="project-figure project-figure--grid"
-                      role="listitem"
-                      layout
-                      transition={{ layout: { duration: focusIndex === null ? 0.25 : 0, ease: 'easeInOut' } }}
-                    >
-                      <MotionImg
-                        layoutId={getLayoutId(img, `grid-${idx}`)}
-                        onClick={() => openImage(idx)}
-                        src={getImageSrc(img, { width: 800, quality: 70, dpr: 1 })}
-                        alt={img.alt}
-                        className="project-image project-image--grid"
-                      />
-                    </MotionFigure>
-                  ))}
-                </MotionDiv>
-              </div>
-            ) : (
-              <>
-                <div className="project-images-bleed">
-                  <div className="project-images-carousel">
-                  <AnimatePresence mode="sync" initial={false}>
-                    {visible.map((img, idx) => (
-                    <MotionFigure
-                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                      
-                      className="project-figure"
-                      layout="position"
-                      initial={{ opacity: 1 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 1 }}
-                      transition={{ duration: focusIndex === null ? 0.2 : 0 }}
-                        >
-                          <MotionImg
-                            layoutId={getLayoutId(img, `carousel-${idx}`)}
-                            onClick={() => openImage(idx)}
-                            src={getImageSrc(img, { width: 1400 })}
-                            alt={img.alt}
-                            className="project-image"
-                          />
-                        </MotionFigure>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              </>
-            )}
+                  <MotionImg
+                    layoutId={getLayoutId(img, `image-${idx}`)}
+                    onClick={() => openImage(idx)}
+                    src={getImageSrc(img, { width: isGridView ? 800 : 1400, quality: isGridView ? 70 : 85, dpr: 1 })}
+                    alt={img.alt}
+                    className={`project-image ${isGridView ? 'project-image--grid' : ''}`}
+                  />
+                </MotionFigure>
+              ))}
+            </MotionDiv>
           </div> 
         </LayoutGroup>
       )}
