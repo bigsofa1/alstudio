@@ -117,7 +117,7 @@ button:hover {
 
 @media (max-width: 500px) {
  :root {
-    --margin: 1rem;
+    --margin: 0.5rem;
     --font-size:15px;
   }
 }

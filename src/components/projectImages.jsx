@@ -539,32 +539,62 @@ return(
                 </div>
               </div>
             </div>
-            <MotionDiv
-              className={`project-images-list ${isGridView ? 'project-images-list--grid' : 'project-images-list--carousel'}`}
-              role="list"
-              style={{ '--grid-columns': clampedGridColumns }}
-              layout
-              layoutDependency={`${isGridView ? `grid-${clampedGridColumns}` : 'carousel'}`}
-              transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
-            >
-              {visible.map((img, idx) => (
-                <MotionFigure
-                  key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
-                  className={`project-figure ${isGridView ? 'project-figure--grid' : 'project-figure--carousel'}`}
-                  role="listitem"
-                  layout
-                  transition={{ layout: { duration: 0.3, ease: 'easeInOut' } }}
+            <AnimatePresence mode="wait" initial={false}>
+              {isGridView ? (
+                <MotionDiv
+                  key="grid-view"
+                  className="project-images-list project-images-list--grid"
+                  role="list"
+                  style={{ '--grid-columns': clampedGridColumns }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                 >
-                  <MotionImg
-                    layoutId={getLayoutId(img, `image-${idx}`)}
-                    onClick={() => openImage(idx)}
-                    src={getImageSrc(img, { width: isGridView ? 800 : 1400, quality: isGridView ? 70 : 85, dpr: 1 })}
-                    alt={img.alt}
-                    className={`project-image ${isGridView ? 'project-image--grid' : ''}`}
-                  />
-                </MotionFigure>
-              ))}
-            </MotionDiv>
+                  {visible.map((img, idx) => (
+                    <MotionFigure
+                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                      className="project-figure project-figure--grid"
+                      role="listitem"
+                    >
+                      <MotionImg
+                        layoutId={`grid-${getLayoutId(img, `image-${idx}`)}`}
+                        onClick={() => openImage(idx)}
+                        src={getImageSrc(img, { width: 800, quality: 70, dpr: 1 })}
+                        alt={img.alt}
+                        className="project-image project-image--grid"
+                      />
+                    </MotionFigure>
+                  ))}
+                </MotionDiv>
+              ) : (
+                <MotionDiv
+                  key="carousel-view"
+                  className="project-images-list project-images-list--carousel"
+                  role="list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                >
+                  {visible.map((img, idx) => (
+                    <MotionFigure
+                      key={img._id || img.image?.asset?._ref || img.fallbackUrl || (typeof img.image === 'string' ? img.image : idx)}
+                      className="project-figure project-figure--carousel"
+                      role="listitem"
+                    >
+                      <MotionImg
+                        layoutId={`carousel-${getLayoutId(img, `image-${idx}`)}`}
+                        onClick={() => openImage(idx)}
+                        src={getImageSrc(img, { width: 1400, quality: 85, dpr: 1 })}
+                        alt={img.alt}
+                        className="project-image"
+                      />
+                    </MotionFigure>
+                  ))}
+                </MotionDiv>
+              )}
+            </AnimatePresence>
           </div> 
         </LayoutGroup>
       )}

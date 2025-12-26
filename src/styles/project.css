@@ -1,5 +1,5 @@
 .project {
-  margin-top: 20vh;
+  margin-top: 0;
 }
 
 :root {
@@ -36,7 +36,7 @@
 .project-images-carousel::before,
 .project-images-carousel::after {
   content: '';
-  flex: 0 0 var(--margin);
+  flex: 0 0 calc(var(--margin) * 2);
 }
 
 .project-images-bleed {
@@ -68,19 +68,24 @@
 }
 
 .project-images-list {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 100vh;
-  width: 100%;
-  max-width: 1400px;
+  width: 100vw;
+  max-width: none;
   box-sizing: border-box;
-  margin: 0 auto;
-  padding: calc(var(--margin) * 2) var(--margin) var(--margin);
+  margin: 0;
+  padding: var(--margin) var(--margin) var(--margin);
   display: grid;
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   justify-content: center;
   justify-items: start;
   align-content: flex-start;
   align-items: start;
-  gap: 37.5px 30px;
+  /* gap: 37.5px 20px; */
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
@@ -88,12 +93,25 @@
   scrollbar-width: none;
 }
 
+.project-images-list::after {
+  content: '';
+  height: calc(var(--margin) * 2);
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
 .project-images-list--carousel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100dvh;
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
-  gap: var(--margin);
+  /* gap: var(--margin); */
   width: calc(100vw + (var(--margin) * 2));
   max-width: none;
   padding: 0;
@@ -103,11 +121,17 @@
   overflow-y: hidden;
   overflow-x: auto;
   min-height: 100vh;
+  overscroll-behavior: contain;
 }
 
 .project-images-list--carousel::before {
   content: '';
-  flex: 0 0 var(--margin);
+  flex: 0 0 calc(var(--margin) * 2);
+}
+
+.project-images-list--carousel::after {
+  content: '';
+  flex: 0 0 calc(var(--margin) * 2);
 }
 
 .project-images-list::-webkit-scrollbar,
@@ -158,10 +182,10 @@
 }
 
 .project-image.project-image--grid {
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  max-height: 100%;
+  width: auto;
+  max-width: 90%;
+  height: auto;
+  max-height: 80%;
   object-fit: contain;
   display: block;
   margin: auto;
@@ -535,9 +559,23 @@
 /* media queries */
 
 @media (max-width: 500px) {
+  
   .project-images-grid {
     padding: calc(var(--margin) * 4) var(--margin) var(--margin);
-    gap: 16px 12px;
+    /* gap: 22px 18px; */
+  }
+
+  .project-images-list--carousel {
+    gap: 20px;
+  }
+
+  .project-image.project-image--grid {
+    max-width: 90%;
+    max-height: 90%;
+  }
+
+  .grid-columns-control input[type="range"] {
+    width: 60px;
   }
 
   .project-controls__filters {
