@@ -78,7 +78,7 @@
   max-width: none;
   box-sizing: border-box;
   margin: 0;
-  padding: var(--margin) var(--margin) var(--margin);
+  padding: calc(var(--margin) * 2) var(--margin) var(--margin);
   display: grid;
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   justify-content: center;
@@ -560,7 +560,7 @@
 
 @media (max-width: 500px) {
   
-  .project-images-grid {
+  .project-images-list {
     padding: calc(var(--margin) * 4) var(--margin) var(--margin);
     /* gap: 22px 18px; */
   }
