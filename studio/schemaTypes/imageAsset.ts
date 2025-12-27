@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
 
 export default defineType({
   name: 'imageAsset',
@@ -15,12 +16,6 @@ export default defineType({
     }),
     defineField({name: 'alt', title: 'Alt Text', type: 'string', description: 'Important for SEO and accessibility.'}),
     defineField({
-      name: 'date',
-      title: 'Date',
-      type: 'datetime',
-      description: 'Use to sort images chronologically.',
-    }), 
-    defineField({
       name: 'collections',
       title: 'Collections',
       type: 'array',
@@ -32,11 +27,13 @@ export default defineType({
       type: 'array',
       of: [{type: 'reference', to: [{type: 'tag'}]}],
     }),
+    orderRankField({type: 'imageAsset'}),
   ],
+  orderings: [orderRankOrdering],
   preview: {
     select: {
       title: 'alt',
-      subtitle: 'caption',
+      subtitle: 'collections.0.name',
       media: 'image',
     },
   },
